@@ -7,6 +7,6 @@ type Config struct {
 	Width  int
 	Height int
 
-	// Размер 1ой клетки в пиксилях
+	// Размер 1ой клетки в пикселях
 	SizeCell int
 }
