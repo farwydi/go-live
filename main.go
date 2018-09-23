@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"math/rand"
 )
 
 // TODO: Пока так, сперва нужно сделать систему, что бы понять, что за чем будет идти, а потом уже вводить оптимизацию
@@ -22,6 +23,8 @@ var config Config
 var world []ICell
 
 func main() {
+
+	rand.Seed(13)
 
 	config = Config{
 		64,

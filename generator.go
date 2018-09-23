@@ -1,5 +1,7 @@
 package main
 
+import "math/rand"
+
 // Механизм генерации мира
 // Модель:
 // y
@@ -10,6 +12,10 @@ package main
 // |(x, y)
 // .----------> x
 
+func InBetween(i, min, max int32) bool {
+	return (i >= min) && (i <= max)
+}
+
 // Простая функция создания нормально распределённого мира
 func GeneratingNormallyDistributedWorld(countByX int, countByY int) []ICell {
 
@@ -17,20 +23,32 @@ func GeneratingNormallyDistributedWorld(countByX int, countByY int) []ICell {
 
 	world := make([]ICell, size)
 
-	for i := 0; i < size; {
+	for i := 0; i < size; i++ {
 
 		x := i / countByX
 		y := i - (x * countByX)
 
-		// TODO: Добавить хаоса
-		world[i] = CreateLiveCell(x, y)
-		world[i+1] = CreateEatCell(x, y+1)
-		world[i+2] = CreatePoisonCell(x, y+2)
+		r := rand.Int31n(100)
 
-		// TODO: Поменять
-		world[i+3] = CreateWellCell(x, y+3)
+		// 10% Well
+		if InBetween(r, 0, 10) {
+			world[i] = CreateWellCell(x, y)
+		}
 
-		i = i + 4
+		// 30% Poison
+		if InBetween(r, 11, 40) {
+			world[i] = CreatePoisonCell(x, y)
+		}
+
+		// 40% Eat
+		if InBetween(r, 41, 80) {
+			world[i] = CreateEatCell(x, y)
+		}
+
+		// 20% Live
+		if InBetween(r, 81, 100) {
+			world[i] = CreateLiveCell(x, y)
+		}
 	}
 
 	return world
