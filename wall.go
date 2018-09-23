@@ -17,6 +17,7 @@ type WellCell struct {
 }
 
 func (e *WellCell) Draw(screen *ebiten.Image) {
+
 	if e.cell.print == nil {
 		e.cell.print, _ = ebiten.NewImage(config.SizeCell, config.SizeCell, ebiten.FilterNearest)
 	}

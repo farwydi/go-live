@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"math/rand"
@@ -8,7 +9,8 @@ import (
 
 // TODO: Пока так, сперва нужно сделать систему, что бы понять, что за чем будет идти, а потом уже вводить оптимизацию
 func update(screen *ebiten.Image) error {
-	ebitenutil.DebugPrint(screen, "Hello world!")
+
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %.2f", ebiten.CurrentFPS()))
 
 	for _, cell := range world {
 		cell.Draw(screen)

@@ -17,6 +17,7 @@ type LiveCell struct {
 }
 
 func (e *LiveCell) Draw(screen *ebiten.Image) {
+
 	if e.cell.print == nil {
 		e.cell.print, _ = ebiten.NewImage(config.SizeCell, config.SizeCell, ebiten.FilterNearest)
 	}
