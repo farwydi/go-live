@@ -30,24 +30,29 @@ func GeneratingNormallyDistributedWorld(countByX int, countByY int) []ICell {
 
 		r := rand.Int31n(100)
 
-		// 10% Well
-		if InBetween(r, 0, 10) {
+		// 2% Well
+		if InBetween(r, 0, 2) {
 			world[i] = CreateWellCell(x, y)
 		}
 
-		// 30% Poison
-		if InBetween(r, 11, 40) {
+		// 4% Poison
+		if InBetween(r, 3, 7) {
 			world[i] = CreatePoisonCell(x, y)
 		}
 
-		// 40% Eat
-		if InBetween(r, 41, 80) {
+		// 5% Eat
+		if InBetween(r, 8, 13) {
 			world[i] = CreateEatCell(x, y)
 		}
 
-		// 20% Live
-		if InBetween(r, 81, 100) {
+		// 1% Live
+		if InBetween(r, 14, 15) {
 			world[i] = CreateLiveCell(x, y)
+		}
+
+		// 88% Empty
+		if InBetween(r, 16, 100) {
+			world[i] = CreateEmptyCell(x, y)
 		}
 	}
 
