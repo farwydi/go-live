@@ -7,7 +7,7 @@ func GeneratingNormallyDistributedWorld(countByX int, countByY int) []Cell {
 
 	size := countByX * countByY
 
-	world := make([]Cell, size, 1)
+	world := make([]Cell, size)
 
 	for i := 0; i < size; {
 		// TODO: Добавить хаоса
