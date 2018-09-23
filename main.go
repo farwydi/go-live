@@ -9,20 +9,24 @@ import (
 func update(screen *ebiten.Image) error {
 	ebitenutil.DebugPrint(screen, "Hello world!")
 
+	for _, cell := range world {
+		cell.Draw(screen)
+	}
+
 	// Цикл обработки кадра
 
 	return nil
 }
 
 var config Config
-var world []Cell
+var world []ICell
 
 func main() {
 
 	config = Config{
-		120,
-		120,
-		8,
+		64,
+		64,
+		18,
 	}
 
 	ww := config.Height * (config.SizeCell + 1)
