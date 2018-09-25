@@ -9,4 +9,8 @@ type Config struct {
 
 	// Размер 1ой клетки в пикселях
 	SizeCell int
+
+	CountLiveCell   int
+	CountPoisonCell int
+	CountEatCell    int
 }

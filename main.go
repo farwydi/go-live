@@ -10,11 +10,11 @@ import (
 // TODO: Пока так, сперва нужно сделать систему, что бы понять, что за чем будет идти, а потом уже вводить оптимизацию
 func update(screen *ebiten.Image) error {
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %.2f", ebiten.CurrentFPS()))
-
 	for _, cell := range world {
 		cell.Draw(screen)
 	}
+
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %.2f", ebiten.CurrentFPS()))
 
 	// Цикл обработки кадра
 
@@ -29,15 +29,19 @@ func main() {
 	rand.Seed(13)
 
 	config = Config{
-		64,
-		64,
-		18,
+		Width:    64,
+		Height:   32,
+		SizeCell: 8,
+
+		CountLiveCell:   8,
+		CountPoisonCell: 64,
+		CountEatCell:    32,
 	}
 
-	ww := config.Height * (config.SizeCell + 1)
-	wh := config.Width * (config.SizeCell + 1)
+	ww := config.Width * (config.SizeCell + 1)
+	wh := config.Height * (config.SizeCell + 1)
 
-	world = GeneratingNormallyDistributedWorld(config.Height, config.Width)
+	world = GeneratingNormallyDistributedWorld()
 
-	ebiten.Run(update, ww, wh, 1, "Hello world!")
+	ebiten.Run(update, ww, wh, 3, "Hello world!")
 }
