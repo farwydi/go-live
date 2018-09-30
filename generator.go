@@ -14,6 +14,7 @@ import (
 // |(x, y)
 // .----------> x
 
+// Получить X и Y по индексу
 func calcXY(i int) (int, int) {
 
 	if i > config.Height * config.Width {
@@ -26,6 +27,7 @@ func calcXY(i int) (int, int) {
 	return x, y
 }
 
+// Получить индекс в масиве по X и Y
 func resolveXY(x int, y int) int {
 
 	if x > config.Width {
