@@ -1,6 +1,8 @@
 package main
 
-import "math/rand"
+import (
+	"math/rand"
+)
 
 // Механизм генерации мира
 // Модель:
@@ -12,18 +14,41 @@ import "math/rand"
 // |(x, y)
 // .----------> x
 
-//func inBetween(i, min, max int32) bool {
-//	return (i >= min) && (i <= max)
-//}
-
 func calcXY(i int) (int, int) {
+
+	if i > config.Height * config.Width {
+		panic("Out of range")
+	}
+
 	x := i / config.Height
 	y := i - (x * config.Height)
+
 	return x, y
+}
+
+func resolveXY(x int, y int) int {
+
+	if x > config.Width {
+		panic("Y > Width")
+	}
+
+	if y > config.Height {
+		panic("X > Height")
+	}
+
+	return (config.Height * x) + y
 }
 
 // Простая функция создания нормально распределённого мира
 func GeneratingNormallyDistributedWorld() []ICell {
+
+	if config.Height == 0 {
+		panic("Height zero")
+	}
+
+	if config.Width == 0 {
+		panic("Width zero")
+	}
 
 	size := config.Height * config.Width
 	world := make([]ICell, size)
