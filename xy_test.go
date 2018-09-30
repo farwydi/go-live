@@ -82,7 +82,7 @@ func TestResolveXY(t *testing.T) {
 	}
 
 	if i := resolveXY(65, 72); i != 4817 {
-		t.Fatalf("resolveXY(0, 1): %d != 4817", i)
+		t.Fatalf("resolveXY(65, 72): %d != 4817", i)
 	}
 }
 
