@@ -6,6 +6,7 @@ import "github.com/hajimehoshi/ebiten"
 
 type ICell interface {
 	Draw(screen *ebiten.Image)
+	Action() bool
 }
 
 type Cell struct {

@@ -29,3 +29,7 @@ func (e *WellCell) Draw(screen *ebiten.Image) {
 
 	screen.DrawImage(e.cell.print, opts)
 }
+
+func (e *WellCell) Action() bool{
+	return true;
+}

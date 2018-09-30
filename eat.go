@@ -29,3 +29,8 @@ func (e *EatCell) Draw(screen *ebiten.Image) {
 
 	screen.DrawImage(e.cell.print, opts)
 }
+
+
+func (e *EatCell) Action() bool{
+	return true;
+}

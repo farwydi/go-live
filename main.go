@@ -5,13 +5,17 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"math/rand"
+	"time"
 )
 
 // TODO: Пока так, сперва нужно сделать систему, что бы понять, что за чем будет идти, а потом уже вводить оптимизацию
 func update(screen *ebiten.Image) error {
-
-	for _, cell := range world {
+	for index, cell := range world {
 		cell.Draw(screen)
+		var cell_live = cell.Action();
+		if (!cell_live) { //если клетка умерла, то помечаем ее как удаленную
+			world[index] = CreateEmptyCell(calcXY(index))
+		}
 	}
 
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %.2f", ebiten.CurrentFPS()))
@@ -25,15 +29,14 @@ var config Config
 var world []ICell
 
 func main() {
-
-	rand.Seed(13)
+	rand.Seed(time.Now().Unix())
 
 	config = Config{
 		Width:    64,
 		Height:   32,
-		SizeCell: 8,
+		SizeCell: 4,
 
-		CountLiveCell:   8,
+		CountLiveCell:   100,
 		CountPoisonCell: 64,
 		CountEatCell:    32,
 	}

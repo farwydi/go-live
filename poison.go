@@ -29,3 +29,7 @@ func (e *PoisonCell) Draw(screen *ebiten.Image) {
 
 	screen.DrawImage(e.cell.print, opts)
 }
+
+func (e *PoisonCell) Action() bool {
+	return true;
+}
