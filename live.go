@@ -9,11 +9,12 @@ import (
 
 func CreateLiveCell(x int, y int) *LiveCell {
 
-	return &LiveCell{Cell{x, y, nil}}
+	return &LiveCell{cell: Cell{X: x, Y: y}}
 }
 
 type LiveCell struct {
 	cell Cell
+	genome [64]int
 }
 
 func (e *LiveCell) Draw(screen *ebiten.Image) {
