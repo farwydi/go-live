@@ -4,8 +4,6 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"image/color"
 	"math/rand"
-	"reflect"
-	//"fmt"
 )
 
 // Описывает модель поведения живой клетки
@@ -16,7 +14,7 @@ func CreateLiveCell(x int, y int) *LiveCell {
 }
 
 type LiveCell struct {
-	cell Cell
+	cell   Cell
 	genome [64]int
 }
 
@@ -34,53 +32,58 @@ func (e *LiveCell) Draw(screen *ebiten.Image) {
 	screen.DrawImage(e.cell.print, opts)
 }
 
-func (e *LiveCell) Action() bool{
-	(*e).Movie()
-	return true;
+func (e *LiveCell) Action() bool {
+
+	e.Movie()
+	return true
 }
 
 func (e *LiveCell) Movie() {
 	for {
-		direction_vector := rand.Intn(8) + 1
+		directionVector := rand.Intn(8) + 1
 		var movieX int
 		var movieY int
-		switch direction_vector {
-			case 1:
-				movieX = (*e).cell.X - 1
-				movieY = (*e).cell.Y + 1
-			case 2:
-				movieX = (*e).cell.X
-				movieY = (*e).cell.Y + 1
-			case 3:
-				movieX = (*e).cell.X + 1
-				movieY = (*e).cell.Y + 1
-			case 4:
-				movieX = (*e).cell.X + 1
-				movieY = (*e).cell.Y
-			case 5:
-				movieX = (*e).cell.X + 1
-				movieY = (*e).cell.Y - 1
-			case 6:
-				movieX = (*e).cell.X
-				movieY = (*e).cell.Y - 1
-			case 7:
-				movieX = (*e).cell.X - 1
-				movieY = (*e).cell.Y + 1
-			case 8:
-				movieX = (*e).cell.X - 1
-				movieY = (*e).cell.Y
+		switch directionVector {
+		case 1:
+			movieX = e.cell.X - 1
+			movieY = e.cell.Y + 1
+		case 2:
+			movieX = e.cell.X
+			movieY = e.cell.Y + 1
+		case 3:
+			movieX = e.cell.X + 1
+			movieY = e.cell.Y + 1
+		case 4:
+			movieX = e.cell.X + 1
+			movieY = e.cell.Y
+		case 5:
+			movieX = e.cell.X + 1
+			movieY = e.cell.Y - 1
+		case 6:
+			movieX = e.cell.X
+			movieY = e.cell.Y - 1
+		case 7:
+			movieX = e.cell.X - 1
+			movieY = e.cell.Y + 1
+		case 8:
+			movieX = e.cell.X - 1
+			movieY = e.cell.Y
 		}
+
 		size := len(world)
 		index := (movieX * config.Height) + movieY
-		if (index > size || index < 0) {
+
+		if index > size || index < 0 {
 			continue
 		}
-		movieType := reflect.TypeOf(world[index]).Elem().Name()
-		if (movieType == "WellCell") {
+
+		switch world[index].(type) {
+		case *WellCell:
 			continue
 		}
-		(*e).cell.X = movieX
-		(*e).cell.Y = movieY
-		break;
+
+		e.cell.X = movieX
+		e.cell.Y = movieY
+		break
 	}
 }

@@ -31,5 +31,6 @@ func (e *PoisonCell) Draw(screen *ebiten.Image) {
 }
 
 func (e *PoisonCell) Action() bool {
-	return true;
+
+	return true
 }

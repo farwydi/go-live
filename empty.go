@@ -20,6 +20,7 @@ func (e *EmptyCell) Draw(screen *ebiten.Image) {
 	// Рисовать не нужно
 }
 
-func (e *EmptyCell) Action() bool{
-	return true;
+func (e *EmptyCell) Action() bool {
+
+	return true
 }
