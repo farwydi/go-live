@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"image/color"
 	"math/rand"
@@ -9,17 +10,17 @@ import (
 // Описывает модель поведения живой клетки
 
 func CreateLiveCell(x int, y int) *LiveCell {
-	var cell *LiveCell = &LiveCell{cell: Cell{X: x, Y: y}}
-	cell.circle = 0;
-	cell.health = rand.Intn(2000)
-	cell.genomeGenerator()
-	return cell
+
+	return &LiveCell{
+		cell: Cell{X: x, Y: y},
+		// Параметр клетки, по умолчанию равен максимальному значению
+		health: config.LiveMaxHealth,
+	}
 }
 
 type LiveCell struct {
 	cell   Cell
 	genome [64]int
-	circle int // цикл по геному
 	health int // жизни клетки
 }
 
@@ -38,73 +39,112 @@ func (e *LiveCell) Draw(screen *ebiten.Image) {
 }
 
 func (e *LiveCell) Action() bool {
-	if (e.health <= 0) {
+
+	if !e.IsLive() {
 		return false
 	}
-	switch e.genome[e.circle] {
-		case 1: //двигаться в случайном направлении
-		 e.Movie()
+
+	i := 0
+	counter := 0
+	var cmd int
+
+	for counter < config.LiveMaxThing {
+		if i == 65 {
+			fmt.Println("x")
+		}
+		if i == 65 {
+			fmt.Println("y")
+		}
+		cmd = e.genome[i]
+
+		switch cmd {
+		case 0:
+			// Ничего не делать
+			continue
+			// Безусловный переход
+		case 1, 2, 3, 4, 5, 6, 7, 8, 9,
+			10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+			20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+			30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+			40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+			50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+			60, 61, 62, 63, 64: // 0-63
+			i = cmd - 1
+		case 66:
+			// Выход
+			break
+			// Движение
+		case 66 + 1:
+			// Верх
+			e.Movie([2]int{0, 1})
+		case 66 + 2:
+			// Верх-право
+			e.Movie([2]int{1, 1})
+		case 66 + 3:
+			// Право
+			e.Movie([2]int{1, 0})
+		case 66 + 4:
+			// Низ-право
+			e.Movie([2]int{1, -1})
+		case 66 + 5:
+			// Низ
+			e.Movie([2]int{0, -1})
+		case 66 + 6:
+			// Низ-лево
+			e.Movie([2]int{-1, -1})
+		case 66 + 7:
+			// Лево
+			e.Movie([2]int{-1, 0})
+		case 66 + 8:
+			// Верх-лево
+			e.Movie([2]int{-1, 1})
+		}
+
+		e.health--
+
+		counter++
+
+		if !e.IsLive() {
+			return false
+		}
 	}
-	e.circle++
-	if e.circle >= cap(e.genome) {
-		e.circle = 0
-	}
-	e.health--
+
 	return true
 }
 
-func (e *LiveCell) Movie() {
-	for {
-		directionVector := rand.Intn(8) + 1
-		var movieX int
-		var movieY int
-		switch directionVector {
-		case 1:
-			movieX = e.cell.X - 1
-			movieY = e.cell.Y + 1
-		case 2:
-			movieX = e.cell.X
-			movieY = e.cell.Y + 1
-		case 3:
-			movieX = e.cell.X + 1
-			movieY = e.cell.Y + 1
-		case 4:
-			movieX = e.cell.X + 1
-			movieY = e.cell.Y
-		case 5:
-			movieX = e.cell.X + 1
-			movieY = e.cell.Y - 1
-		case 6:
-			movieX = e.cell.X
-			movieY = e.cell.Y - 1
-		case 7:
-			movieX = e.cell.X - 1
-			movieY = e.cell.Y + 1
-		case 8:
-			movieX = e.cell.X - 1
-			movieY = e.cell.Y
-		}
-
-		size := len(world)
-		index := (movieX * config.Height) + movieY
-
-		if index > size || index < 0 {
-			continue
-		}
-
-		switch world[index].(type) {
-		case *WellCell:
-			continue
-		}
-
-		e.cell.X = movieX
-		e.cell.Y = movieY
-		break
+func (e *LiveCell) IsLive() bool {
+	if e.health <= 0 {
+		// Означает что клетка умерла :(
+		return false
 	}
+
+	return true
 }
 
-func (e *LiveCell) genomeGenerator() {
-	for index,_ := range e.genome {
-		e.genome[index] = rand.Intn(2)	// покачто геном заполняется 0 стоять, 1 идти куда попало
+func (e *LiveCell) Movie(vector [2]int) bool {
+
+	movieX := e.cell.X + vector[0]
+	movieY := e.cell.Y - vector[1]
+	i, err := resolveXY(movieX, movieY)
+
+	if err != nil {
+		return false
+	}
+
+	// TODO: Если яд то клетка умрет сразу же
+
+	switch world[i].(type) {
+	case *EmptyCell:
+		e.cell.X = movieX
+		e.cell.Y = movieY
+		return true
+	}
+
+	return false
+}
+
+func (e *LiveCell) RandGenomeGenerator() {
+	for index := range e.genome {
+		e.genome[index] = rand.Intn(74) // пока что геном заполняется рандомно
 	}
 }

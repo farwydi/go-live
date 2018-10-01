@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"math/rand"
 )
 
@@ -17,7 +18,7 @@ import (
 // Получить X и Y по индексу
 func calcXY(i int) (int, int) {
 
-	if i > config.Height * config.Width {
+	if i > config.Height*config.Width {
 		panic("Out of range")
 	}
 
@@ -27,18 +28,18 @@ func calcXY(i int) (int, int) {
 	return x, y
 }
 
-// Получить индекс в масиве по X и Y
-func resolveXY(x int, y int) int {
+// Получить индекс в массиве по X и Y
+func resolveXY(x int, y int) (int, error) {
 
 	if x > config.Width {
-		panic("Y > Width")
+		return 0, errors.New("Y > Width")
 	}
 
 	if y > config.Height {
-		panic("X > Height")
+		return 0, errors.New("X > Height")
 	}
 
-	return (config.Height * x) + y
+	return (config.Height * x) + y, nil
 }
 
 // Простая функция создания нормально распределённого мира
@@ -86,7 +87,9 @@ func GeneratingNormallyDistributedWorld() []ICell {
 		i := rand.Intn(size)
 
 		if world[i] == nil {
-			world[i] = CreateLiveCell(calcXY(i))
+			live := CreateLiveCell(calcXY(i))
+			live.RandGenomeGenerator()
+			world[i] = live
 			c--
 		}
 	}

@@ -13,4 +13,8 @@ type Config struct {
 	CountLiveCell   int
 	CountPoisonCell int
 	CountEatCell    int
+
+	// Параметры живой клетки
+	LiveMaxHealth int
+	LiveMaxThing  int
 }

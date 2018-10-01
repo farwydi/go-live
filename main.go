@@ -18,7 +18,7 @@ func update(screen *ebiten.Image) error {
 
 		cell.Draw(screen)
 
-		//если клетка умерла, то помечаем ее как удаленную
+		// Если клетка умерла, то помечаем ее как удалённую
 		if !cell.Action() {
 			world[index] = CreateEmptyCell(calcXY(index))
 		}
@@ -41,12 +41,15 @@ func main() {
 		CountLiveCell:   100,
 		CountPoisonCell: 64,
 		CountEatCell:    32,
+
+		LiveMaxHealth: 2000,
+		LiveMaxThing:  10,
 	}
 
 	ww := config.Width * (config.SizeCell + 1)
 	wh := config.Height * (config.SizeCell + 1)
 
 	world = GeneratingNormallyDistributedWorld()
-	
+
 	ebiten.Run(update, ww, wh, 3, "Hello world!")
 }
