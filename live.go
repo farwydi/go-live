@@ -9,13 +9,18 @@ import (
 // Описывает модель поведения живой клетки
 
 func CreateLiveCell(x int, y int) *LiveCell {
-
-	return &LiveCell{cell: Cell{X: x, Y: y}}
+	var cell *LiveCell = &LiveCell{cell: Cell{X: x, Y: y}}
+	cell.circle = 0;
+	cell.health = rand.Intn(2000)
+	cell.genomeGenerator()
+	return cell
 }
 
 type LiveCell struct {
 	cell   Cell
 	genome [64]int
+	circle int // цикл по геному
+	health int // жизни клетки
 }
 
 func (e *LiveCell) Draw(screen *ebiten.Image) {
@@ -33,8 +38,18 @@ func (e *LiveCell) Draw(screen *ebiten.Image) {
 }
 
 func (e *LiveCell) Action() bool {
-
-	e.Movie()
+	if (e.health <= 0) {
+		return false
+	}
+	switch e.genome[e.circle] {
+		case 1: //двигаться в случайном направлении
+		 e.Movie()
+	}
+	e.circle++
+	if e.circle >= cap(e.genome) {
+		e.circle = 0
+	}
+	e.health--
 	return true
 }
 
@@ -85,5 +100,11 @@ func (e *LiveCell) Movie() {
 		e.cell.X = movieX
 		e.cell.Y = movieY
 		break
+	}
+}
+
+func (e *LiveCell) genomeGenerator() {
+	for index,_ := range e.genome {
+		e.genome[index] = rand.Intn(2)	// покачто геном заполняется 0 стоять, 1 идти куда попало
 	}
 }

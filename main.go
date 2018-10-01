@@ -47,6 +47,6 @@ func main() {
 	wh := config.Height * (config.SizeCell + 1)
 
 	world = GeneratingNormallyDistributedWorld()
-
+	
 	ebiten.Run(update, ww, wh, 3, "Hello world!")
 }
