@@ -39,13 +39,8 @@ func (e *LiveCell) Draw(screen *ebiten.Image) {
 
 func (e *LiveCell) Action() bool {
 
-	if !e.IsLive() {
-		return false
-	}
-
 	i := 0
 	counter := 0
-	var cmd int
 
 	for counter < config.LiveMaxThing {
 
@@ -54,11 +49,7 @@ func (e *LiveCell) Action() bool {
 			return false
 		}
 
-		counter++
-
-		cmd = e.genome[i]
-
-		switch cmd {
+		switch e.genome[i] {
 		case 0:
 			// Ничего не делать
 			continue
@@ -70,7 +61,7 @@ func (e *LiveCell) Action() bool {
 			40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
 			50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
 			60, 61, 62, 63, 64: // 0-63
-			i = cmd - 1
+			i = e.genome[i] - 1
 		case 66:
 			// Выход
 			return true
@@ -108,6 +99,8 @@ func (e *LiveCell) Action() bool {
 			e.Movie([2]int{-1, 1})
 			return true
 		}
+
+		counter++
 	}
 
 	return true
