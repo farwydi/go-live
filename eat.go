@@ -3,17 +3,22 @@ package main
 import (
 	"github.com/hajimehoshi/ebiten"
 	"image/color"
+	"math/rand"
 )
 
 // Модель ячейки с едой
 
 func CreateEatCell(x int, y int) *EatCell {
 
-	return &EatCell{Cell{x, y, nil}}
+	return &EatCell{
+		cell: Cell{x, y, nil},
+		calories: rand.Intn(config.EatMaxCalories),
+	}
 }
 
 type EatCell struct {
 	cell Cell
+	calories int
 }
 
 func (e *EatCell) Draw(screen *ebiten.Image) {

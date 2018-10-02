@@ -17,4 +17,10 @@ type Config struct {
 	// Параметры живой клетки
 	LiveMaxHealth int
 	LiveMaxThing  int
+
+	// Параметры еды
+	EatMaxCalories int
+
+	// Очки, начисляемые за действия
+	Rating map[string] int
 }

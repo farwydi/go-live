@@ -44,6 +44,13 @@ func main() {
 
 		LiveMaxHealth: 2000,
 		LiveMaxThing:  10,
+
+		EatMaxCalories: 50,
+
+		Rating: map[string]int{
+			"eat": 10,
+			"movie": 5,
+		},
 	}
 
 	ww := config.Width * (config.SizeCell + 1)

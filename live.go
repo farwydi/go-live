@@ -14,6 +14,7 @@ func CreateLiveCell(x int, y int) *LiveCell {
 		cell: Cell{X: x, Y: y},
 		// Параметр клетки, по умолчанию равен максимальному значению
 		health: config.LiveMaxHealth,
+		score: 0,
 	}
 }
 
@@ -21,6 +22,7 @@ type LiveCell struct {
 	cell   Cell
 	genome [64]int
 	health int // жизни клетки
+	score int // рейтинг клетки
 }
 
 func (e *LiveCell) Draw(screen *ebiten.Image) {
@@ -41,7 +43,6 @@ func (e *LiveCell) Action() bool {
 
 	i := 0
 	counter := 0
-
 	for counter < config.LiveMaxThing {
 
 		e.health--
@@ -125,12 +126,19 @@ func (e *LiveCell) Movie(vector [2]int) bool {
 		return false
 	}
 
-	// TODO: Если яд то клетка умрет сразу же
-
 	switch world[i].(type) {
 	case *EmptyCell:
 		e.cell.X = movieX
 		e.cell.Y = movieY
+		e.score += config.Rating["movie"]
+		return true
+	case *PoisonCell:
+		e.health = 0
+		return true
+	case *EatCell:
+		e.health += world[i].(*EatCell).calories
+		e.score += config.Rating["eat"]
+		world[i] = CreateEmptyCell(movieX,movieY)
 		return true
 	}
 
