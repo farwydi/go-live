@@ -22,5 +22,6 @@ type Config struct {
 	EatMaxCalories int
 
 	// Очки, начисляемые за действия
-	Rating map[string] int
+	RatingEat  int
+	RatingMove int
 }
