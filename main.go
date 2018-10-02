@@ -16,12 +16,12 @@ func update(screen *ebiten.Image) error {
 	// Цикл обработки кадра
 	for index, cell := range world {
 
-		cell.Draw(screen)
-
 		// Если клетка умерла, то помечаем ее как удалённую
 		if !cell.Action() {
 			world[index] = CreateEmptyCell(calcXY(index))
 		}
+
+		cell.Draw(screen)
 	}
 
 	return nil

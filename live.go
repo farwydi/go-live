@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/hajimehoshi/ebiten"
 	"image/color"
 	"math/rand"
@@ -49,12 +48,14 @@ func (e *LiveCell) Action() bool {
 	var cmd int
 
 	for counter < config.LiveMaxThing {
-		if i == 65 {
-			fmt.Println("x")
+
+		e.health--
+		if !e.IsLive() {
+			return false
 		}
-		if i == 65 {
-			fmt.Println("y")
-		}
+
+		counter++
+
 		cmd = e.genome[i]
 
 		switch cmd {
@@ -72,40 +73,40 @@ func (e *LiveCell) Action() bool {
 			i = cmd - 1
 		case 66:
 			// Выход
-			break
+			return true
 			// Движение
 		case 66 + 1:
 			// Верх
 			e.Movie([2]int{0, 1})
+			return true
 		case 66 + 2:
 			// Верх-право
 			e.Movie([2]int{1, 1})
+			return true
 		case 66 + 3:
 			// Право
 			e.Movie([2]int{1, 0})
+			return true
 		case 66 + 4:
 			// Низ-право
 			e.Movie([2]int{1, -1})
+			return true
 		case 66 + 5:
 			// Низ
 			e.Movie([2]int{0, -1})
+			return true
 		case 66 + 6:
 			// Низ-лево
 			e.Movie([2]int{-1, -1})
+			return true
 		case 66 + 7:
 			// Лево
 			e.Movie([2]int{-1, 0})
+			return true
 		case 66 + 8:
 			// Верх-лево
 			e.Movie([2]int{-1, 1})
-		}
-
-		e.health--
-
-		counter++
-
-		if !e.IsLive() {
-			return false
+			return true
 		}
 	}
 
