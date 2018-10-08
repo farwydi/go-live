@@ -1,19 +1,14 @@
 package main
 
-import "github.com/hajimehoshi/ebiten"
-
 // Модель клетки, ячейки базовый объект, пустота
 
 type ICell interface {
-	Draw(screen *ebiten.Image)
-	Action() bool
+	Action()
 }
 
 type Cell struct {
 	X int
 	Y int
-
-	print *ebiten.Image
 }
 
 func (c *Cell) GetXY() (float64, float64) {

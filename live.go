@@ -1,10 +1,8 @@
 package main
 
 import (
-	"fmt"
-	"github.com/hajimehoshi/ebiten"
-	"image/color"
 	"math/rand"
+	"sync"
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -22,7 +20,7 @@ func RandStringRunes(n int) string {
 func CreateLiveCell(x int, y int) *LiveCell {
 
 	return &LiveCell{
-		cell: Cell{X: x, Y: y},
+		cell: Cell{x, y},
 		// Параметр клетки, по умолчанию равен максимальному значению
 		health: config.LiveMaxHealth,
 		name:   RandStringRunes(5),
@@ -37,21 +35,65 @@ type LiveCell struct {
 	name   string
 }
 
-func (e *LiveCell) Draw(screen *ebiten.Image) {
-
-	if e.cell.print == nil {
-		e.cell.print, _ = ebiten.NewImage(config.SizeCell, config.SizeCell, ebiten.FilterNearest)
+func (e *LiveCell) IsLive() bool {
+	if e.health <= 0 {
+		// Означает что клетка умерла :(
+		return false
 	}
 
-	e.cell.print.Fill(color.NRGBA{G: 0xff, R: 0xff, A: 0xff})
-
-	opts := &ebiten.DrawImageOptions{}
-	opts.GeoM.Translate(e.cell.GetXY())
-
-	screen.DrawImage(e.cell.print, opts)
+	return true
 }
 
-func (e *LiveCell) Action() bool {
+func (e *LiveCell) See(vector [2]int) {
+
+}
+
+func (e *LiveCell) Movie(vector [2]int) error {
+
+	movieX := e.cell.X + vector[0]
+	movieY := e.cell.Y - vector[1]
+	i, err := resolveXY(movieX, movieY)
+
+	if err != nil {
+		return err
+	}
+
+	switch t := world[i].(type) {
+	case *EmptyCell:
+		//fmt.Printf("[%s.%d] move (%d,%d)\n", e.name, e.health, movieX, movieY)
+		mutex.Lock()
+		e.cell.X = movieX
+		e.cell.Y = movieY
+		mutex.Unlock()
+		e.score += config.RatingMove
+	case *PoisonCell:
+		//fmt.Printf("[%s.%d] move and die (poison)\n", e.name, e.health)
+		e.health = 0
+	case *EatCell:
+		//fmt.Printf("[%s.%d] move and eat\n", e.name, e.health)
+		e.health += t.calories
+		e.score += config.RatingEat
+		// Обнуляем клетку с едой
+		world[i] = CreateEmptyCell(movieX, movieY)
+		// Переходим на эту клетку
+		mutex.Lock()
+		e.cell.X = movieX
+		e.cell.Y = movieY
+		mutex.Unlock()
+		e.score += config.RatingEat
+	}
+
+	return nil
+}
+
+func (e *LiveCell) RandGenomeGenerator() {
+	for index := range e.genome {
+		e.genome[index] = rand.Intn(74) // пока что геном заполняется рандомно
+	}
+}
+
+func (e *LiveCell) Action() {
+	defer wg.Done()
 
 	i := 0
 	for ; e.IsLive(); e.health-- {
@@ -60,9 +102,8 @@ func (e *LiveCell) Action() bool {
 		case 0, 66:
 			// Ничего не делать
 			// Выход
-			fmt.Printf("[%s.%d] wait\n", e.name, e.health)
-			// Движение
-		case 66 + 1:
+			//fmt.Printf("[%s.%d] wait\n", e.name, e.health)
+		case 66 + 1: // Движение
 			// Верх
 			e.Movie([2]int{0, 1})
 		case 66 + 2:
@@ -98,67 +139,17 @@ func (e *LiveCell) Action() bool {
 			50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
 			60, 61, 62, 63, 64: // 0-63
 			i = e.genome[i] - 1
-			fmt.Printf("[%s.%d] seek %d\n", e.name, e.health, i)
+			//fmt.Printf("[%s.%d] seek %d\n", e.name, e.health, i)
 		default:
 			i++
 		}
 
+		// Зацикливание
 		if i > 63 {
 			i = 0
 		}
 	}
 
-	return false
-}
-
-func (e *LiveCell) IsLive() bool {
-	if e.health <= 0 {
-		// Означает что клетка умерла :(
-		return false
-	}
-
-	return true
-}
-
-func (e *LiveCell) Movie(vector [2]int) error {
-
-	movieX := e.cell.X + vector[0]
-	movieY := e.cell.Y - vector[1]
-	i, err := resolveXY(movieX, movieY)
-
-	if err != nil {
-		return err
-	}
-
-	switch world[i].(type) {
-	case *EmptyCell:
-		fmt.Printf("[%s.%d] move (%d,%d)\n", e.name, e.health, movieX, movieY)
-		mutex.Lock()
-		e.cell.X = movieX
-		e.cell.Y = movieY
-		mutex.Unlock()
-		e.score += config.RatingMove
-	case *PoisonCell:
-		fmt.Printf("[%s.%d] move and die (poison)\n", e.name, e.health)
-		e.health = 0
-	case *EatCell:
-		fmt.Printf("[%s.%d] move and eat\n", e.name, e.health)
-		e.health += world[i].(*EatCell).calories
-		e.score += config.RatingEat
-		world[i] = CreateEmptyCell(movieX, movieY)
-	}
-
-	return nil
-}
-
-func (e *LiveCell) RandGenomeGenerator() {
-	for index := range e.genome {
-		e.genome[index] = rand.Intn(74) // пока что геном заполняется рандомно
-	}
-}
-
-func (e *LiveCell) Detach(c chan bool) {
-
 	// Передаём статус клетки каналу
-	c <- e.Action()
+	c <- true
 }

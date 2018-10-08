@@ -2,9 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/hajimehoshi/ebiten"
 	"math/rand"
-	"os"
 	"sync"
 )
 
@@ -12,6 +10,8 @@ var (
 	config Config
 	world  []ICell
 	mutex  = &sync.Mutex{}
+	wg     sync.WaitGroup
+	lives  [CountLiveCell]*LiveCell
 )
 
 func main() {
@@ -21,10 +21,6 @@ func main() {
 		Width:    64,
 		Height:   32,
 		SizeCell: 4,
-
-		CountLiveCell:   100,
-		CountPoisonCell: 64,
-		CountEatCell:    32,
 
 		LiveMaxHealth: 100,
 
@@ -36,15 +32,8 @@ func main() {
 
 	fmt.Printf("%v+\n", config)
 
-	world = GeneratingNormallyDistributedWorld()
-
-	if os.Getenv("simulate") == "on" {
-
+	for {
+		world = GeneratingNormallyDistributedWorld()
 		Simulate()
-	} else {
-
-		ww := config.Width * (config.SizeCell + 1)
-		wh := config.Height * (config.SizeCell + 1)
-		ebiten.Run(UpdateScreen, ww, wh, 3, "Hello world!")
 	}
 }

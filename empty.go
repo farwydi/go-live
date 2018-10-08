@@ -1,26 +1,16 @@
 package main
 
-import (
-	"github.com/hajimehoshi/ebiten"
-)
-
 // Модель пустой ячейки
 
 func CreateEmptyCell(x int, y int) *EmptyCell {
 
-	return &EmptyCell{Cell{x, y, nil}}
+	return &EmptyCell{Cell{x, y}}
 }
 
 type EmptyCell struct {
 	cell Cell
 }
 
-func (e *EmptyCell) Draw(screen *ebiten.Image) {
-
-	// Рисовать не нужно
-}
-
-func (e *EmptyCell) Action() bool {
-
-	return true
+func (e *EmptyCell) Action() {
+	defer wg.Done()
 }

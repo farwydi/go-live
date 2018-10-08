@@ -1,7 +1,5 @@
 package main
 
-import "fmt"
-
 // Функции запуска симуляции
 
 func Simulate() {
@@ -10,23 +8,18 @@ func Simulate() {
 		panic("world not init")
 	}
 
-	//for {
 	// Цикл обработки кадра
-	for index, cell := range world {
+	for _, cell := range world {
 
-		live, ok := cell.(*LiveCell)
-		if ok {
-			c := make(chan bool)
-
-			// Отпускаем клетку думать
-			go live.Detach(c)
-
-			// Габелла
-			if !<-c {
-				fmt.Printf("[%s] done", live.name)
-				world[index] = CreateEmptyCell(calcXY(index))
-			}
-		}
+		// Отпускаем клетку думать
+		wg.Add(1)
+		go cell.Action()
 	}
+
+	wg.Wait()
+
+	// Селекция
+	//for _, live := range lives {
+	//live
 	//}
 }

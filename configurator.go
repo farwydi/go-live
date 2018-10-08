@@ -2,6 +2,12 @@ package main
 
 // Настройки
 
+const (
+	CountLiveCell   = 100
+	CountPoisonCell = 64
+	CountEatCell    = 32
+)
+
 type Config struct {
 	// Размерность мира, кол-во клеток в направлениях x и y
 	Width  int
@@ -9,10 +15,6 @@ type Config struct {
 
 	// Размер 1ой клетки в пикселях
 	SizeCell int
-
-	CountLiveCell   int
-	CountPoisonCell int
-	CountEatCell    int
 
 	// Параметры живой клетки
 	LiveMaxHealth int

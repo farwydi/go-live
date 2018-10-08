@@ -59,30 +59,27 @@ func GeneratingNormallyDistributedWorld() []ICell {
 	// Gen well
 	// Top
 	for i := 0; i < size; i += config.Height {
-
 		world[i] = CreateWellCell(calcXY(i))
 	}
 
 	// Bottom
 	for i := config.Height - 1; i < size; i += config.Height {
-
 		world[i] = CreateWellCell(calcXY(i))
 	}
 
 	// Left
 	for i := 1; i < config.Height-1; i++ {
-
 		world[i] = CreateWellCell(calcXY(i))
 	}
 
 	// Right
 	for i := config.Width*config.Height - config.Height + 1; i < size-1; i++ {
-
 		world[i] = CreateWellCell(calcXY(i))
 	}
 
 	// Live
-	for c := config.CountLiveCell; c > 0; {
+	liveIt := 0
+	for c := CountLiveCell; c > 0; {
 
 		i := rand.Intn(size)
 
@@ -90,12 +87,14 @@ func GeneratingNormallyDistributedWorld() []ICell {
 			live := CreateLiveCell(calcXY(i))
 			live.RandGenomeGenerator()
 			world[i] = live
+			lives[liveIt] = live
+			liveIt++
 			c--
 		}
 	}
 
 	// Eat
-	for c := config.CountEatCell; c > 0; {
+	for c := CountEatCell; c > 0; {
 
 		i := rand.Intn(size)
 
@@ -106,7 +105,7 @@ func GeneratingNormallyDistributedWorld() []ICell {
 	}
 
 	// Poison
-	for c := config.CountPoisonCell; c > 0; {
+	for c := CountPoisonCell; c > 0; {
 
 		i := rand.Intn(size)
 
