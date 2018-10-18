@@ -42,6 +42,10 @@ func resolveXY(x int, y int) (int, error) {
 	return (config.Height * x) + y, nil
 }
 
+func ResetWorld() {
+
+}
+
 // Простая функция создания нормально распределённого мира
 func GeneratingNormallyDistributedWorld() []ICell {
 

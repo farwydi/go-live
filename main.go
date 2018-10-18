@@ -35,5 +35,6 @@ func main() {
 	for {
 		world = GeneratingNormallyDistributedWorld()
 		Simulate()
+		ResetWorld()
 	}
 }

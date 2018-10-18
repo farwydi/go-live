@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
 )
 
@@ -63,39 +64,56 @@ func (e *LiveCell) See(vector [2]int) {
 
 func (e *LiveCell) Movie(vector [2]int) error {
 
+	// movieX, movieY - координаты движения
+	// i - адрес в массиве
 	movieX := e.cell.X + vector[0]
 	movieY := e.cell.Y - vector[1]
 	i, err := resolveXY(movieX, movieY)
 
+	// Движение за границы
 	if err != nil {
 		return err
 	}
 
 	switch t := world[i].(type) {
 	case *EmptyCell:
-		//fmt.Printf("[%s.%d] move (%d,%d)\n", e.name, e.health, movieX, movieY)
+		// Наткнулись на пустую клетку
+		if PrintAction {
+			fmt.Printf("[%s.%d] move (%d,%d)\n", e.name, e.health, movieX, movieY)
+		}
 		mutex.Lock()
 		e.cell.X = movieX
 		e.cell.Y = movieY
 		mutex.Unlock()
 		e.score += config.RatingMove
+
 	case *PoisonCell:
-		//fmt.Printf("[%s.%d] move and die (poison)\n", e.name, e.health)
+		// Наступили на яд
+		if PrintAction {
+			fmt.Printf("[%s.%d] move and die (poison)\n", e.name, e.health)
+		}
 		e.health = 0
 	case *EatCell:
-		//fmt.Printf("[%s.%d] move and eat\n", e.name, e.health)
+		// Наступили на еду
+		if PrintAction {
+			fmt.Printf("[%s.%d] move and eat\n", e.name, e.health)
+		}
+		// Забираем калории еды и добавляем их к текущему ХП
 		e.health += t.calories
+		// Начисляем рейтинг за активность
 		e.score += config.RatingEat
-		// Обнуляем клетку с едой
+		// Обнуляет клетку с едой
 		world[i] = CreateEmptyCell(movieX, movieY)
 		// Переходим на эту клетку
+
+		// Двигаем клетку на место с едой
 		mutex.Lock()
 		e.cell.X = movieX
 		e.cell.Y = movieY
 		mutex.Unlock()
-		e.score += config.RatingEat
 	}
 
+	// ОК
 	return nil
 }
 
@@ -107,64 +125,88 @@ func RandGenomeGenerator() Genome {
 	return genome
 }
 
+// Команды генома:
+const (
+	GWait = iota
+
+	// Движение
+	GMoveUp
+	GMoveUpLeft
+	GMoveUpRight
+	GMoveLeft
+	GMoveRight
+	GMoveDown
+	GMoveDownLeft
+	GMoveDownRight
+
+	// Посмотреть
+	GSeeUp
+	GSeeUpLeft
+	GSeeUpRight
+	GSeeLeft
+	GSeeRight
+	GSeeDown
+	GSeeDownLeft
+	GSeeDownRight
+
+	// Конец команд
+	GEnd
+
+	GJumpStart
+	GJumpEnd = GJumpStart + (GEnd - 1)
+)
+
 func (e *LiveCell) Action() {
 	defer wg.Done()
 
-	i := 0
-	for ; e.IsLive(); e.health-- {
+	// Цикл крутится пока не закончатся ХП
+	for it := 0; e.IsLive(); e.health-- {
 
-		switch e.genome[i] {
-		case 0, 66:
+		// Выполняем команду в геноме
+		switch e.genome[it] {
+
+		case GWait:
 			// Ничего не делать
-			// Выход
-			//fmt.Printf("[%s.%d] wait\n", e.name, e.health)
-		case 66 + 1: // Движение
-			// Верх
-			e.Movie([2]int{0, 1})
-		case 66 + 2:
-			// Верх-право
-			e.Movie([2]int{1, 1})
-		case 66 + 3:
-			// Право
-			e.Movie([2]int{1, 0})
-		case 66 + 4:
-			// Низ-право
-			e.Movie([2]int{1, -1})
-		case 66 + 5:
-			// Низ
-			e.Movie([2]int{0, -1})
-		case 66 + 6:
-			// Низ-лево
-			e.Movie([2]int{-1, -1})
-		case 66 + 7:
-			// Лево
-			e.Movie([2]int{-1, 0})
-		case 66 + 8:
-			// Верх-лево
-			e.Movie([2]int{-1, 1})
-		}
+			if PrintAction && PrintActionLevel > 2 {
+				fmt.Printf("[%s.%d] wait\n", e.name, e.health)
+			}
 
-		// Безусловный переход
-		//switch e.genome[i] {
-		//case 1, 2, 3, 4, 5, 6, 7, 8, 9,
-		//	10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-		//	20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-		//	30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-		//	40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
-		//	50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
-		//	60, 61, 62, 63, 64: // 0-63
-		//	i = e.genome[i]
-		//	//fmt.Printf("[%s.%d] seek %d\n", e.name, e.health, i)
-		//default:
-		//	i++
-		//}
+		case GMoveUp:
+			e.Movie(Up)
+		case GMoveUpRight:
+			e.Movie(UpRight)
+		case GMoveRight:
+			e.Movie(Right)
+		case GMoveDownRight:
+			e.Movie(DownRight)
+		case GMoveDown:
+			e.Movie(Down)
+		case GMoveDownLeft:
+			e.Movie(DownLeft)
+		case GMoveLeft:
+			e.Movie(Left)
+		case GMoveUpLeft:
+			e.Movie(UpLeft)
+
+		default:
+			jumpTo := int(e.genome[it])
+			switch {
+			// Это номер в геноме куда переместить указатель
+			case jumpTo >= GJumpStart && jumpTo <= GJumpEnd:
+				// Безусловный переход
+				if PrintAction && PrintActionLevel > 2 {
+					fmt.Printf("[%s.%d] seek %d\n", e.name, e.health, jumpTo)
+				}
+				it = jumpTo - (GEnd + 1)
+			default:
+				// Неизвестная команда
+				it++
+			}
+		}
 
 		// Зацикливание
-		if i > GenomeSize-1 {
-			i = 0
+		if it > GenomeSize-1 {
+			it = 0
 		}
 	}
-
-	// Передаём статус клетки каналу
-	//c <- true
 }

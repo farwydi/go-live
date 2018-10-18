@@ -6,6 +6,9 @@ const (
 	CountLiveCell   = 100
 	CountPoisonCell = 64
 	CountEatCell    = 32
+
+	PrintAction      = false
+	PrintActionLevel = 3
 )
 
 type Config struct {
