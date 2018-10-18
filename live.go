@@ -2,7 +2,6 @@ package main
 
 import (
 	"math/rand"
-	"sync"
 )
 
 var letterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -27,9 +26,23 @@ func CreateLiveCell(x int, y int) *LiveCell {
 	}
 }
 
+type livesScores [CountLiveCell]*LiveCell
+
+func (s livesScores) Len() int {
+	return len(s)
+}
+
+func (s livesScores) Swap(i, j int) {
+	*s[i], *s[j] = *s[j], *s[i]
+}
+
+func (s livesScores) Less(i, j int) bool {
+	return s[i].score > s[j].score
+}
+
 type LiveCell struct {
 	cell   Cell
-	genome [64]int
+	genome Genome
 	health int // жизни клетки
 	score  int // рейтинг клетки
 	name   string
@@ -86,10 +99,12 @@ func (e *LiveCell) Movie(vector [2]int) error {
 	return nil
 }
 
-func (e *LiveCell) RandGenomeGenerator() {
-	for index := range e.genome {
-		e.genome[index] = rand.Intn(74) // пока что геном заполняется рандомно
+func RandGenomeGenerator() Genome {
+	var genome Genome
+	for index := range genome {
+		genome[index] = RandomGen() // пока что геном заполняется рандомно
 	}
+	return genome
 }
 
 func (e *LiveCell) Action() {
@@ -130,26 +145,26 @@ func (e *LiveCell) Action() {
 		}
 
 		// Безусловный переход
-		switch e.genome[i] {
-		case 1, 2, 3, 4, 5, 6, 7, 8, 9,
-			10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-			20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-			30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-			40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
-			50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
-			60, 61, 62, 63, 64: // 0-63
-			i = e.genome[i] - 1
-			//fmt.Printf("[%s.%d] seek %d\n", e.name, e.health, i)
-		default:
-			i++
-		}
+		//switch e.genome[i] {
+		//case 1, 2, 3, 4, 5, 6, 7, 8, 9,
+		//	10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+		//	20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+		//	30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+		//	40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+		//	50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+		//	60, 61, 62, 63, 64: // 0-63
+		//	i = e.genome[i]
+		//	//fmt.Printf("[%s.%d] seek %d\n", e.name, e.health, i)
+		//default:
+		//	i++
+		//}
 
 		// Зацикливание
-		if i > 63 {
+		if i > GenomeSize-1 {
 			i = 0
 		}
 	}
 
 	// Передаём статус клетки каналу
-	c <- true
+	//c <- true
 }

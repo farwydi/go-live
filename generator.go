@@ -85,7 +85,7 @@ func GeneratingNormallyDistributedWorld() []ICell {
 
 		if world[i] == nil {
 			live := CreateLiveCell(calcXY(i))
-			live.RandGenomeGenerator()
+			live.genome = RandGenomeGenerator()
 			world[i] = live
 			lives[liveIt] = live
 			liveIt++

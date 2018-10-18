@@ -11,7 +11,7 @@ var (
 	world  []ICell
 	mutex  = &sync.Mutex{}
 	wg     sync.WaitGroup
-	lives  [CountLiveCell]*LiveCell
+	lives  livesScores
 )
 
 func main() {
@@ -30,7 +30,7 @@ func main() {
 		RatingMove: 5,
 	}
 
-	fmt.Printf("%v+\n", config)
+	fmt.Printf("%+v\n", config)
 
 	for {
 		world = GeneratingNormallyDistributedWorld()
