@@ -26,5 +26,9 @@ func RandomHalfGenPosition() int {
 }
 
 func RandomGen() GenomeType {
-	return GenomeType(rand.Intn(74))
+	gen := GenomeType(rand.Intn(GJumpEnd))
+	for gen == GEnd {
+		gen = GenomeType(rand.Intn(GJumpEnd))
+	}
+	return GenomeType(rand.Intn(GJumpEnd))
 }
