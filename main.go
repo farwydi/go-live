@@ -7,11 +7,13 @@ import (
 )
 
 var (
-	config Config
-	world  []ICell
-	mutex  = &sync.Mutex{}
-	wg     sync.WaitGroup
-	lives  livesScores
+	config       Config
+	world        []ICell
+	mutex        = &sync.Mutex{}
+	wg           sync.WaitGroup
+	lives        livesScores
+	sim          = 0
+	liveInitDome bool
 )
 
 func main() {

@@ -41,5 +41,5 @@ func Simulate() {
 	}
 
 	fmt.Print(s)
-
+	liveInitDome = true
 }

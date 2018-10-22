@@ -17,13 +17,26 @@ func RandStringRunes(n int) string {
 
 // Описывает модель поведения живой клетки
 
-func CreateLiveCell(x int, y int) *LiveCell {
+func CreateLiveCellWithGenome(x int, y int, id int, genome Genome) *LiveCell {
 
 	return &LiveCell{
 		cell: Cell{x, y},
 		// Параметр клетки, по умолчанию равен максимальному значению
 		health: config.LiveMaxHealth,
 		name:   RandStringRunes(5),
+		id:     id,
+		genome: genome,
+	}
+}
+
+func CreateLiveCell(x int, y int, id int) *LiveCell {
+
+	return &LiveCell{
+		cell: Cell{x, y},
+		// Параметр клетки, по умолчанию равен максимальному значению
+		health: config.LiveMaxHealth,
+		name:   RandStringRunes(5),
+		id:     id,
 	}
 }
 
@@ -47,6 +60,7 @@ type LiveCell struct {
 	health int // жизни клетки
 	score  int // рейтинг клетки
 	name   string
+	id     int
 }
 
 func (e *LiveCell) IsLive() bool {
@@ -58,8 +72,28 @@ func (e *LiveCell) IsLive() bool {
 	return true
 }
 
-func (e *LiveCell) See(vector [2]int) {
+func (e *LiveCell) See(vector [2]int) int {
+	X := e.cell.X + vector[0]
+	Y := e.cell.Y - vector[1]
 
+	i, err := resolveXY(X, Y)
+	if err != nil {
+		// Идём дальше
+		return 1
+	}
+
+	switch world[i].(type) {
+	case *EatCell:
+		return 2
+	case *PoisonCell:
+		return 3
+	case *EmptyCell:
+		return 4
+	case *WellCell:
+		return 5
+	}
+
+	return 1
 }
 
 func (e *LiveCell) Movie(vector [2]int) error {
@@ -86,6 +120,7 @@ func (e *LiveCell) Movie(vector [2]int) error {
 		e.cell.Y = movieY
 		mutex.Unlock()
 		e.score += config.RatingMove
+		log(fmt.Sprintf("L%d\tM\t%d,%d\n", e.id, movieX, movieY))
 
 	case *PoisonCell:
 		// Наступили на яд
@@ -93,6 +128,7 @@ func (e *LiveCell) Movie(vector [2]int) error {
 			fmt.Printf("[%s.%d] move and die (poison)\n", e.name, e.health)
 		}
 		e.health = 0
+		log(fmt.Sprintf("L%d\tD\n", e.id))
 	case *EatCell:
 		// Наступили на еду
 		if PrintAction {
@@ -170,6 +206,23 @@ func (e *LiveCell) Action() {
 			if PrintAction && PrintActionLevel > 2 {
 				fmt.Printf("[%s.%d] wait\n", e.name, e.health)
 			}
+
+		case GSeeUp:
+			it = e.See(Up)
+		case GSeeUpRight:
+			it = e.See(UpRight)
+		case GSeeRight:
+			it = e.See(Right)
+		case GSeeDownRight:
+			it = e.See(DownRight)
+		case GSeeDown:
+			it = e.See(Down)
+		case GSeeDownLeft:
+			it = e.See(DownLeft)
+		case GSeeLeft:
+			it = e.See(Left)
+		case GSeeUpLeft:
+			it = e.See(UpLeft)
 
 		case GMoveUp:
 			e.Movie(Up)

@@ -33,5 +33,7 @@ func Merge(genome1, genome2 Genome) Genome {
 		genome[i] = genome2[i]
 	}
 
+	genome[RandomGenPosition()] = RandomGen()
+
 	return genome
 }

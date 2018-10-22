@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 )
 
@@ -44,6 +45,7 @@ func resolveXY(x int, y int) (int, error) {
 
 func ResetWorld() {
 
+	sim += 1
 }
 
 // Простая функция создания нормально распределённого мира
@@ -59,6 +61,8 @@ func GeneratingNormallyDistributedWorld() []ICell {
 
 	size := config.Height * config.Width
 	world := make([]ICell, size)
+
+	log(fmt.Sprintf("Epoh %d\n", sim))
 
 	// Gen well
 	// Top
@@ -88,10 +92,18 @@ func GeneratingNormallyDistributedWorld() []ICell {
 		i := rand.Intn(size)
 
 		if world[i] == nil {
-			live := CreateLiveCell(calcXY(i))
-			live.genome = RandGenomeGenerator()
-			world[i] = live
+			x, y := calcXY(i)
+			live := CreateLiveCell(x, y, liveIt)
+
+			if liveInitDome {
+				live.genome = lives[liveIt].genome
+			} else {
+				live.genome = RandGenomeGenerator()
+			}
+
 			lives[liveIt] = live
+			world[i] = live
+
 			liveIt++
 			c--
 		}
