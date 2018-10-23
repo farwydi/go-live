@@ -15,5 +15,7 @@ func init() {
 }
 
 func log(msg string) {
-	//logFile.Write([]byte(msg))
+	if PrintLog {
+		logFile.Write([]byte(msg))
+	}
 }

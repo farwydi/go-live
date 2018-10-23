@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"sync"
+	"time"
 )
 
 var (
@@ -35,8 +36,13 @@ func main() {
 	fmt.Printf("%+v\n", config)
 
 	for {
+		start := time.Now()
+
 		world = GeneratingNormallyDistributedWorld()
 		Simulate()
 		ResetWorld()
+
+		elapsed := time.Since(start)
+		fmt.Printf("\rBinomial took %s", elapsed)
 	}
 }

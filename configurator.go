@@ -1,6 +1,12 @@
 package main
 
+import "runtime"
+
 // Настройки
+
+func init() {
+	runtime.GOMAXPROCS(runtime.NumCPU())
+}
 
 const (
 	CountLiveCell   = 100
@@ -9,6 +15,8 @@ const (
 
 	PrintAction      = false
 	PrintActionLevel = 3
+
+	PrintLog = false
 )
 
 type Config struct {
