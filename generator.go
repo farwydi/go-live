@@ -67,22 +67,30 @@ func GeneratingNormallyDistributedWorld() []ICell {
 	// Gen well
 	// Top
 	for i := 0; i < size; i += config.Height {
-		world[i] = CreateWellCell(calcXY(i))
+		x, y := calcXY(i)
+		log(fmt.Sprintf("STATIC W %d,%d\n", x, y))
+		world[i] = CreateWellCell(x, y)
 	}
 
 	// Bottom
 	for i := config.Height - 1; i < size; i += config.Height {
-		world[i] = CreateWellCell(calcXY(i))
+		x, y := calcXY(i)
+		log(fmt.Sprintf("STATIC W %d,%d\n", x, y))
+		world[i] = CreateWellCell(x, y)
 	}
 
 	// Left
 	for i := 1; i < config.Height-1; i++ {
-		world[i] = CreateWellCell(calcXY(i))
+		x, y := calcXY(i)
+		log(fmt.Sprintf("STATIC W %d,%d\n", x, y))
+		world[i] = CreateWellCell(x, y)
 	}
 
 	// Right
 	for i := config.Width*config.Height - config.Height + 1; i < size-1; i++ {
-		world[i] = CreateWellCell(calcXY(i))
+		x, y := calcXY(i)
+		log(fmt.Sprintf("STATIC W %d,%d\n", x, y))
+		world[i] = CreateWellCell(x, y)
 	}
 
 	// Live
@@ -115,7 +123,9 @@ func GeneratingNormallyDistributedWorld() []ICell {
 		i := rand.Intn(size)
 
 		if world[i] == nil {
-			world[i] = CreateEatCell(calcXY(i))
+			x, y := calcXY(i)
+			world[i] = CreateEatCell(x, y)
+			log(fmt.Sprintf("STATIC E %d,%d\n", x, y))
 			c--
 		}
 	}
@@ -126,7 +136,9 @@ func GeneratingNormallyDistributedWorld() []ICell {
 		i := rand.Intn(size)
 
 		if world[i] == nil {
-			world[i] = CreatePoisonCell(calcXY(i))
+			x, y := calcXY(i)
+			world[i] = CreatePoisonCell(x, y)
+			log(fmt.Sprintf("STATIC P %d,%d\n", x, y))
 			c--
 		}
 	}

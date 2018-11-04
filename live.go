@@ -120,7 +120,7 @@ func (e *LiveCell) Movie(vector [2]int) error {
 		e.cell.Y = movieY
 		mutex.Unlock()
 		e.score += config.RatingMove
-		log(fmt.Sprintf("L%d\tM\t%d,%d\n", e.id, movieX, movieY))
+		log(fmt.Sprintf("L %d M %d,%d\n", e.id, movieX, movieY))
 
 	case *PoisonCell:
 		// Наступили на яд
@@ -128,7 +128,7 @@ func (e *LiveCell) Movie(vector [2]int) error {
 			fmt.Printf("[%s.%d] move and die (poison)\n", e.name, e.health)
 		}
 		e.health = 0
-		log(fmt.Sprintf("L%d\tD\n", e.id))
+		log(fmt.Sprintf("L %d D\n", e.id))
 	case *EatCell:
 		// Наступили на еду
 		if PrintAction {

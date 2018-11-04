@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+  <html>
+    <head>
+      <!--Import Google Icon Font-->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+
+    <body>
+      <p>Фаил с жизнью</p>
+      <input type="file" id="file">
+      <br>
+      <p id="epochCounter"></p>
+      <p id="current">Текущий кадр: -</p>
+      <button id='last'>Предыдущий кадр</button>
+      <button id='next'>Следующий кадр</button>
+      <button id='auto'>Авто</button>
+      <button id='stop'>Стоп</button>
+      Эпоха <input type="text" value="0" id = "epoch_id" disabled>
+      <button id='lastEpoch'>Прошлая эпоха</button>
+      <button id='nextEpoch'>Следующая эпоха</button>
+      <br><br>
+      <canvas id='canvas'></canvas>
+      <script type="text/javascript" src="engine.js"></script>
+    </body>
+  </html>
