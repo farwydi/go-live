@@ -4,13 +4,13 @@ package main
 
 func CreateWellCell(x int, y int) *WellCell {
 
-	return &WellCell{Cell{x, y}}
+    return &WellCell{Cell{x, y}}
 }
 
 type WellCell struct {
-	cell Cell
+    cell Cell
 }
 
 func (e *WellCell) Action() {
-	defer wg.Done()
+    defer wg.Done()
 }

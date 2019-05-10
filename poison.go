@@ -4,13 +4,13 @@ package main
 
 func CreatePoisonCell(x int, y int) *PoisonCell {
 
-	return &PoisonCell{Cell{x, y}}
+    return &PoisonCell{Cell{x, y}}
 }
 
 type PoisonCell struct {
-	cell Cell
+    cell Cell
 }
 
 func (e *PoisonCell) Action() {
-	defer wg.Done()
+    defer wg.Done()
 }
