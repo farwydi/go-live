@@ -13,9 +13,6 @@ const (
     CountPoisonCell = 64
     CountEatCell    = 32
 
-    PrintAction      = false
-    PrintActionLevel = 3
-
     PrintLog = false
 )
 

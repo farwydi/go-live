@@ -112,7 +112,7 @@ func (e *LiveCell) Movie(vector [2]int) error {
     switch t := world[i].(type) {
     case *EmptyCell:
         // Наткнулись на пустую клетку
-        if PrintAction {
+        if *PrintActionPtr {
             fmt.Printf("[%s.%d] move (%d,%d)\n", e.name, e.health, movieX, movieY)
         }
         mutex.Lock()
@@ -124,14 +124,14 @@ func (e *LiveCell) Movie(vector [2]int) error {
 
     case *PoisonCell:
         // Наступили на яд
-        if PrintAction {
+        if *PrintActionPtr {
             fmt.Printf("[%s.%d] move and die (poison)\n", e.name, e.health)
         }
         e.health = 0
         log(fmt.Sprintf("L%d\tD\n", e.id))
     case *EatCell:
         // Наступили на еду
-        if PrintAction {
+        if *PrintActionPtr {
             fmt.Printf("[%s.%d] move and eat\n", e.name, e.health)
         }
         // Забираем калории еды и добавляем их к текущему ХП
@@ -203,7 +203,7 @@ func (e *LiveCell) Action() {
 
         case GWait:
             // Ничего не делать
-            if PrintAction && PrintActionLevel > 2 {
+            if *PrintActionPtr && *PrintActionLevelPtr > 2 {
                 fmt.Printf("[%s.%d] wait\n", e.name, e.health)
             }
 
@@ -247,7 +247,7 @@ func (e *LiveCell) Action() {
             // Это номер в геноме куда переместить указатель
             case jumpTo >= GJumpStart && jumpTo <= GJumpEnd:
                 // Безусловный переход
-                if PrintAction && PrintActionLevel > 2 {
+                if *PrintActionPtr && *PrintActionLevelPtr > 2 {
                     fmt.Printf("[%s.%d] seek %d\n", e.name, e.health, jumpTo)
                 }
                 it = jumpTo - (GEnd + 1)
