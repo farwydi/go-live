@@ -1,48 +1,57 @@
 package main
 
 import (
-	"fmt"
-	"math/rand"
-	"sync"
-	"time"
+    "flag"
+    "fmt"
+    "math/rand"
+    "sync"
+    "time"
 )
 
 var (
-	config       Config
-	world        []ICell
-	mutex        = &sync.Mutex{}
-	wg           sync.WaitGroup
-	lives        livesScores
-	sim          = 0
-	liveInitDome bool
+    config       Config
+    world        []ICell
+    mutex        = &sync.Mutex{}
+    wg           sync.WaitGroup
+    lives        livesScores
+    sim          = 0
+    liveInitDome bool
+)
+
+// -wwidth=64 -wheight=32 -wsizecell=4
+var (
+    WidthPtr    = flag.Int("wwidth", 64, "World width")
+    HeightPtr   = flag.Int("wheight", 32, "World height")
+    SizeCellPtr = flag.Int("wsizecell", 4, "World size cell")
 )
 
 func main() {
-	rand.Seed(13)
+    rand.Seed(13)
 
-	config = Config{
-		Width:    64,
-		Height:   32,
-		SizeCell: 4,
+    config = Config{
+        Width:    *WidthPtr,
+        Height:   *HeightPtr,
+        SizeCell: *SizeCellPtr,
 
-		LiveMaxHealth: 100,
+        LiveMaxHealth: 100,
 
-		EatMaxCalories: 50,
+        EatMaxCalories: 50,
 
-		RatingEat:  10,
-		RatingMove: 5,
-	}
+        RatingEat:  10,
+        RatingMove: 5,
+    }
 
-	fmt.Printf("%+v\n", config)
+    fmt.Printf("%+v\n", config)
 
-	for {
-		start := time.Now()
+    for {
+        start := time.Now()
+        loop()
+        fmt.Printf("\rBinomial took %s", time.Since(start))
+    }
+}
 
-		world = GeneratingNormallyDistributedWorld()
-		Simulate()
-		ResetWorld()
-
-		elapsed := time.Since(start)
-		fmt.Printf("\rBinomial took %s", elapsed)
-	}
+func loop() {
+    world = GeneratingNormallyDistributedWorld()
+    Simulate()
+    ResetWorld()
 }
