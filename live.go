@@ -31,6 +31,8 @@ func CreateLiveCellWithGenome(x int, y int, id int, genome Genome) *LiveCell {
 
 func CreateLiveCell(x int, y int, id int) *LiveCell {
 
+	log(fmt.Sprintf("I L %d,%d\n", x, y))
+
 	return &LiveCell{
 		cell: Cell{x, y},
 		// Параметр клетки, по умолчанию равен максимальному значению

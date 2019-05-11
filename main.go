@@ -35,6 +35,8 @@ func main() {
 
 	fmt.Printf("%+v\n", config)
 
+	log("VERSION 2\n")
+
 	for {
 		start := time.Now()
 

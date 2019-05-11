@@ -16,7 +16,7 @@ const (
 	PrintAction      = false
 	PrintActionLevel = 3
 
-	PrintLog = false
+	PrintLog = true
 )
 
 type Config struct {
