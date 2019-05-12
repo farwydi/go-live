@@ -121,25 +121,30 @@ func (e *LiveCell) Movie(vector [2]int) error {
         }
 
         log(fmt.Sprintf("S M %d,%d %d,%d\n", e.cell.X, e.cell.Y, movieX, movieY))
+
         mutex.Lock()
         e.cell.X = movieX
         e.cell.Y = movieY
         mutex.Unlock()
+
         e.score += config.RatingMove
-        log(fmt.Sprintf("L%d\tM\t%d,%d\n", e.id, movieX, movieY))
 
     case *PoisonCell:
         // Наступили на яд
         if *PrintActionPtr {
             fmt.Printf("[%s.%d] move and die (poison)\n", e.name, e.health)
         }
+
         e.health = 0
+
         log(fmt.Sprintf("S D %d,%d\n", e.cell.X, e.cell.Y))
+
     case *EatCell:
         // Наступили на еду
         if *PrintActionPtr {
             fmt.Printf("[%s.%d] move and eat\n", e.name, e.health)
         }
+
         // Забираем калории еды и добавляем их к текущему ХП
         e.health += t.calories
         // Начисляем рейтинг за активность
@@ -150,6 +155,7 @@ func (e *LiveCell) Movie(vector [2]int) error {
 
         // Двигаем клетку на место с едой
         log(fmt.Sprintf("S E %d,%d %d,%d\n", e.cell.X, e.cell.Y, movieX, movieY))
+
         mutex.Lock()
         e.cell.X = movieX
         e.cell.Y = movieY

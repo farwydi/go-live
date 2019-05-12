@@ -7,7 +7,7 @@ var logFile *os.File
 func init() {
     var err error
 
-    logFile, err = os.OpenFile("./sim.log", os.O_CREATE|os.O_WRONLY, os.ModePerm)
+    logFile, err = os.OpenFile(*LogFile, os.O_CREATE|os.O_WRONLY, os.ModePerm)
 
     if err != nil {
         panic(err)
@@ -15,7 +15,7 @@ func init() {
 }
 
 func log(msg string) {
-    if PrintLog {
+    if *PrintActionPtr {
         logFile.Write([]byte(msg))
     }
 }

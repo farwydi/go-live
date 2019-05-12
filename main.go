@@ -18,14 +18,15 @@ var (
     liveInitDome bool
 )
 
-// -wWidth=64 -wHeight=32 -wSizeCell=4
+// -w-width=64 -w-height=32 -w-size-cell=4 make-log=true
 var (
     SeedPtr             = flag.Int64("seed", 13, "Seed")
-    WidthPtr            = flag.Int("wWidth", 64, "World width")
-    HeightPtr           = flag.Int("wHeight", 32, "World height")
-    SizeCellPtr         = flag.Int("wSizeCell", 4, "World size cell")
-    PrintActionPtr      = flag.Bool("action", false, "Print action")
-    PrintActionLevelPtr = flag.Int("wActionLevel", 3, "Print action level")
+    WidthPtr            = flag.Int("w-width", 64, "World width")
+    HeightPtr           = flag.Int("w-height", 32, "World height")
+    SizeCellPtr         = flag.Int("w-size-cell", 4, "World size cell")
+    PrintActionPtr      = flag.Bool("make-log", true, "Print action")
+    PrintActionLevelPtr = flag.Int("log-level", 3, "Print action level")
+    LogFile             = flag.String("log-file", "sim.log", "Log filename")
 )
 
 func main() {
