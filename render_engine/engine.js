@@ -1,187 +1,249 @@
-let input = document.getElementById('file');
-// let epochCounter = document.getElementById('epochCounter');
-let current_idx = 0;
-let cur_log = document.getElementById('current');
-let canvas = document.getElementById('canvas');
-let context = canvas.getContext('2d');
-let world = [];
-let world_static = [];
-let epoches = [];
-let epoch_id = document.getElementById('epoch_id');
-
-context.canvas.width = 700;
-context.canvas.height = 500;
-context.scale(10, 10);
-
-function startLive(index, render_vector = -1) {
-    let current_world = epoches[epoch_id.value][1];
-    current_world.forEach(function (item) {
-        if (item[index] === void 0) {
-            return;
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+class Render {
+    constructor() {
+        this.canvas = document.getElementById('canvas');
+        this.context = this.canvas.getContext("2d");
+        this.canvas.width = 700;
+        this.canvas.height = 500;
+        this.context.scale(10, 10);
+    }
+    clear() {
+        // context.clearRect(x, y, 1, 1);
+    }
+    print(x, y) {
+        this.context.fillRect(x, y, 1, 1);
+        this.context.fillStyle = 'yellow';
+        this.context.fill();
+    }
+}
+class Player {
+    constructor() {
+        this.epoches = [];
+        this.render = new Render();
+        this.epochCounter = document.getElementById('epochCounter');
+    }
+    play() {
+        return __awaiter(this, void 0, void 0, function* () {
+            for (const eh of this.epoches) {
+                this.epochCounter.innerText = `Эпоха: ${eh.id}`;
+                eh.pre_render();
+                yield eh.play();
+            }
+        });
+    }
+    load(log) {
+        let e_id = 0;
+        let lines = log.split("\n");
+        lines.forEach((line) => {
+            let current = line.split(' ');
+            switch (current[0]) {
+                case "EPOCH": {
+                    // Инициализация эпохи
+                    e_id = parseInt(current[1]);
+                    this.epoches[e_id] = new Epoch(this.render, current[1]);
+                    return;
+                }
+                case "I": {
+                    const e = this.epoches[e_id];
+                    let position = current[2].split(',');
+                    e.init(resolveType(current[1]), new Position(parseInt(position[0]), parseInt(position[1])));
+                    return;
+                }
+                case "S": {
+                    const e = this.epoches[e_id];
+                    let position = current[2].split(',');
+                    e.append(resolveAction(current[1]), [...current.slice(2)]);
+                    return;
+                }
+            }
+        });
+        console.log(this.epoches);
+    }
+}
+class Position {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+    }
+}
+var ActionType;
+(function (ActionType) {
+    ActionType[ActionType["A_UNKNOWN"] = 0] = "A_UNKNOWN";
+    ActionType[ActionType["A_DEI"] = 1] = "A_DEI";
+    ActionType[ActionType["A_EAT"] = 2] = "A_EAT";
+    ActionType[ActionType["A_MOVE"] = 4] = "A_MOVE";
+})(ActionType || (ActionType = {}));
+function resolveAction(t) {
+    switch (t) {
+        case "M":
+            return ActionType.A_MOVE;
+        case "E":
+            return ActionType.A_EAT;
+        case "D":
+            return ActionType.A_DEI;
+        default:
+            return ActionType.A_UNKNOWN;
+    }
+}
+var ElementType;
+(function (ElementType) {
+    ElementType[ElementType["E_UNKNOWN"] = 0] = "E_UNKNOWN";
+    ElementType[ElementType["E_WELL"] = 1] = "E_WELL";
+    ElementType[ElementType["E_EAT"] = 2] = "E_EAT";
+    ElementType[ElementType["E_POISON"] = 3] = "E_POISON";
+    ElementType[ElementType["E_LIVE"] = 4] = "E_LIVE";
+    ElementType[ElementType["E_EMPTY"] = 5] = "E_EMPTY";
+})(ElementType || (ElementType = {}));
+function resolveType(t) {
+    switch (t) {
+        case "W":
+            return ElementType.E_WELL;
+        case "E":
+            return ElementType.E_EAT;
+        case "P":
+            return ElementType.E_POISON;
+        case "L":
+            return ElementType.E_LIVE;
+        case "0":
+            return ElementType.E_EMPTY;
+        default:
+            return ElementType.E_UNKNOWN;
+    }
+}
+class BaseElement {
+    constructor(type, position) {
+        this.type = type;
+        this.position = position;
+    }
+    render(ctx) {
+        ctx.fillRect(this.position.x, this.position.y, 1, 1);
+        switch (this.type) {
+            case ElementType.E_EAT:
+                ctx.fillStyle = 'red';
+                break;
+            case ElementType.E_LIVE:
+                ctx.fillStyle = 'yellow';
+                break;
+            case ElementType.E_POISON:
+                ctx.fillStyle = 'green';
+                break;
+            case ElementType.E_WELL:
+                ctx.fillStyle = 'black';
+                break;
         }
-        let last_current;
-        let x;
-        let y;
-        let xy;
-        if (item[index + render_vector] !== void 0) {
-            last_current = item[index + render_vector].split(' ');
-            if (last_current[3] !== void 0) {
-                xy = last_current[3].split(',');
-                x = Number.parseInt(xy[0]);
-                y = Number.parseInt(xy[1]);
-                context.clearRect(x, y, 1, 1);
+        ctx.fill();
+    }
+}
+class SnapshotElement {
+    constructor(id, type, p1, p2) {
+        this.id = id;
+        this.type = type;
+        this.p1 = p1;
+        this.p2 = p2;
+    }
+    render(ctx) {
+        switch (this.type) {
+            case ActionType.A_MOVE:
+            case ActionType.A_EAT: {
+                ctx.clearRect(this.p1.x, this.p1.y, 1, 1);
+                if (this.p2 == null) {
+                    return;
+                }
+                ctx.fillRect(this.p2.x, this.p2.y, 1, 1);
+                ctx.fillStyle = 'yellow';
+                ctx.fill();
+                break;
+            }
+            case ActionType.A_DEI: {
+                ctx.clearRect(this.p1.x, this.p1.y, 1, 1);
+                break;
             }
         }
-
-
-        let current = item[index].split(' ');
-        if (current[3] === void 0) {
+    }
+}
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+function resolveXY(x, y) {
+    return (32 * x) + y;
+}
+class Epoch {
+    constructor(render, id) {
+        this.render = render;
+        this.id = id;
+        this.zero = [];
+        this.snapshot = [];
+        this.cur_log = document.getElementById('current');
+        this.speed = document.getElementById('speed');
+    }
+    get count() {
+        return this.snapshot.length;
+    }
+    play() {
+        return __awaiter(this, void 0, void 0, function* () {
+            for (const s of this.snapshot) {
+                s.render(this.render.context);
+                this.cur_log.innerText = `Кадр: ${s.id}`;
+                yield sleep(parseInt(this.speed.value));
+            }
+        });
+    }
+    append(action, cmd) {
+        if (action == ActionType.A_UNKNOWN) {
             return;
         }
-        xy = current[3].split(',');
-        x = Number.parseInt(xy[0]);
-        y = Number.parseInt(xy[1]);
-        context.fillRect(x, y, 1, 1);
-        if (current[0] === 'L') {
-            context.fillStyle = 'yellow';
+        switch (action) {
+            case ActionType.A_DEI: {
+                let position = cmd[0].split(',');
+                this.snapshot.push(new SnapshotElement(this.snapshot.length.toString(), action, new Position(parseInt(position[0]), parseInt(position[1]))));
+                break;
+            }
+            case ActionType.A_EAT:
+            case ActionType.A_MOVE: {
+                let on = cmd[0].split(',');
+                let to = cmd[1].split(',');
+                this.snapshot.push(new SnapshotElement(this.snapshot.length.toString(), action, new Position(parseInt(on[0]), parseInt(on[1])), new Position(parseInt(to[0]), parseInt(to[1]))));
+                break;
+            }
         }
-        context.fill();
-
-    });
-    return index;
+    }
+    init(type, position) {
+        this.zero.push(new BaseElement(type, position));
+    }
+    pre_render() {
+        this.render.context.clearRect(0, 0, 700, 500);
+        for (const b of this.zero) {
+            b.render(this.render.context);
+        }
+    }
 }
-
-function staticRender() {
-    let stat = epoches[epoch_id.value][0];
-    stat.forEach(function (item) {
-        let current = item.split(' ');
-        let xy = current[2].split(',');
-        let x = Number.parseInt(xy[0]);
-        let y = Number.parseInt(xy[1]);
-        context.fillRect(x, y, 1, 1);
-        if (current[1] === 'W') {
-            context.fillStyle = 'grey';
-        }
-        if (current[1] === 'P') {
-            context.fillStyle = 'red';
-        }
-        if (current[1] === 'E') {
-            context.fillStyle = 'green';
-        }
-        context.fill();
-
+const player = new Player();
+const inputFile = document.getElementById("file");
+if (inputFile != null) {
+    inputFile.addEventListener("change", (event) => {
+        // @ts-ignore
+        let { files: file } = event.target;
+        let reader = new FileReader();
+        reader.onload = (pe) => {
+            // @ts-ignore
+            let { result: text } = pe.target;
+            player.load(text);
+        };
+        reader.readAsText(file[0]);
     });
 }
-
-function processLive(live) {
-    let file = live.split("\n");
-    file.forEach(function (str) {
-        let current = str.split(' ');
-        let e_id;
-        if (current[0] === 'Epoh') {
-            e_id = parseInt(current[1]);
-            epoches[e_id] = [];
-            world = [];
-            world_static = [];
-            return;
-        }
-        if (current[0] === 'STATIC') {
-            world_static.push(str);
-            return;
-        }
-        if (world[current[1]] !== void 0) {
-            world[current[1]].push(str);
-        } else {
-            world[current[1]] = [str];
-        }
-        epoches[e_id][0] = world_static;
-        epoches[e_id][1] = world;
-    });
-    staticRender();
-    startLive(0);
+const autoBtn = document.getElementById('auto');
+if (autoBtn != null) {
+    autoBtn.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
+        yield player.play();
+    }));
 }
-
-let lastBtn = document.getElementById('last');
-let nextBtn = document.getElementById('next');
-let autoBtn = document.getElementById('auto');
-let stopBtn = document.getElementById('stop');
-let lastEpochBtn = document.getElementById('lastEpoch');
-let nextEpochBtn = document.getElementById('nextEpoch');
-
-lastBtn.addEventListener('click', function () {
-    if (current_idx - 1 < 0) {
-        return;
-    }
-    current_idx = current_idx - 1;
-    cur_log.innerHTML = 'Текущий кадр: ' + current_idx;
-    startLive(current_idx, 1);
-});
-
-nextBtn.addEventListener('click', function () {
-    if (current_idx + 1 > world.length - 1) {
-        return;
-    }
-    current_idx = current_idx + 1;
-    cur_log.innerHTML = 'Текущий кадр: ' + current_idx;
-    startLive(current_idx, -1);
-});
-
-input.addEventListener('change', function (evt) {
-    let {files: file} = evt.target;
-    let reader = new FileReader();
-    reader.onload = function (f) {
-        let {result: text} = f.target;
-        processLive(text);
-    };
-    reader.readAsText(file[0]);
-});
-
-
-let auto_render_id = -1;
-autoBtn.addEventListener('click', function () {
-    context.clearRect(0, 0, context.width, context.height);
-    staticRender();
-    let current_index = 0;
-    auto_render_id = setInterval(function () {
-        cur_log.innerHTML = 'Текущий кадр: ' + current_index;
-        startLive(current_index);
-        current_index += 1;
-
-    }, 500);
-});
-
-stopBtn.addEventListener('click', function () {
-    clearInterval(auto_render_id);
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    staticRender();
-    // let current_index = 0;
-    startLive(0);
-});
-
-lastEpochBtn.addEventListener('click', function () {
-    let e_id = parseInt(epoch_id.value);
-    e_id--;
-    if (e_id < 0) {
-        return;
-    }
-    clearInterval(auto_render_id);
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    // let current_index = 0;
-    epoch_id.value = e_id;
-    staticRender();
-    startLive(0);
-});
-
-nextEpochBtn.addEventListener('click', function () {
-    let e_id = parseInt(epoch_id.value);
-    e_id++;
-    if (epoches[e_id] === void 0) {
-        return;
-    }
-    clearInterval(auto_render_id);
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    // current_index = 0;
-    epoch_id.value = e_id;
-    staticRender();
-    startLive(0);
-});
+//# sourceMappingURL=engine.js.map

@@ -19,6 +19,8 @@ func RandStringRunes(n int) string {
 
 func CreateLiveCellWithGenome(x int, y int, id int, genome Genome) *LiveCell {
 
+	log(fmt.Sprintf("I L %d,%d\n", x, y))
+
 	return &LiveCell{
 		cell: Cell{x, y},
 		// Параметр клетки, по умолчанию равен максимальному значению
@@ -117,12 +119,13 @@ func (e *LiveCell) Movie(vector [2]int) error {
 		if PrintAction {
 			fmt.Printf("[%s.%d] move (%d,%d)\n", e.name, e.health, movieX, movieY)
 		}
+
+		log(fmt.Sprintf("S M %d,%d %d,%d\n", e.cell.X, e.cell.Y, movieX, movieY))
 		mutex.Lock()
 		e.cell.X = movieX
 		e.cell.Y = movieY
 		mutex.Unlock()
 		e.score += config.RatingMove
-		log(fmt.Sprintf("L %d M %d,%d\n", e.id, movieX, movieY))
 
 	case *PoisonCell:
 		// Наступили на яд
@@ -130,7 +133,7 @@ func (e *LiveCell) Movie(vector [2]int) error {
 			fmt.Printf("[%s.%d] move and die (poison)\n", e.name, e.health)
 		}
 		e.health = 0
-		log(fmt.Sprintf("L %d D\n", e.id))
+		log(fmt.Sprintf("S D %d,%d\n", e.cell.X, e.cell.Y))
 	case *EatCell:
 		// Наступили на еду
 		if PrintAction {
@@ -145,6 +148,7 @@ func (e *LiveCell) Movie(vector [2]int) error {
 		// Переходим на эту клетку
 
 		// Двигаем клетку на место с едой
+		log(fmt.Sprintf("S E %d,%d %d,%d\n", e.cell.X, e.cell.Y, movieX, movieY))
 		mutex.Lock()
 		e.cell.X = movieX
 		e.cell.Y = movieY
