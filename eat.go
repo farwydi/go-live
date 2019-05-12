@@ -1,12 +1,15 @@
 package main
 
 import (
+    "fmt"
     "math/rand"
 )
 
 // Модель ячейки с едой
 
 func CreateEatCell(x int, y int) *EatCell {
+
+    log(fmt.Sprintf("I E %d,%d\n", x, y))
 
     return &EatCell{
         cell:     Cell{x, y},

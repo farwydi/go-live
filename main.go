@@ -46,10 +46,15 @@ func main() {
 
     fmt.Printf("%+v\n", config)
 
+    log("VERSION 2\n")
+
     for {
         start := time.Now()
+
         loop()
-        fmt.Printf("\rBinomial took %s", time.Since(start))
+
+        elapsed := time.Since(start)
+        fmt.Printf("\rBinomial took %s", elapsed)
     }
 }
 
@@ -57,24 +62,4 @@ func loop() {
     world = GeneratingNormallyDistributedWorld()
     Simulate()
     ResetWorld()
-
-    //ebiten.Run(UpdateScreen, ww, wh, 3, "Hello world!")
 }
-
-//func UpdateScreen(screen *ebiten.Image) error {
-//
-//    ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %.2f", ebiten.CurrentFPS()))
-//
-//    // Цикл обработки кадра
-//    for index, cell := range world {
-//
-//        // Если клетка умерла, то помечаем ее как удалённую
-//        if !cell.Action() {
-//            world[index] = CreateEmptyCell(calcXY(index))
-//        }
-//
-//        cell.Draw(screen)
-//    }
-//
-//    return nil
-//}
