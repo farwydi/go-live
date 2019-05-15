@@ -23,7 +23,7 @@ class Render {
             genomDOM.className = "genom";
             for (const gen of genom) {
                 const gStr = resolveGenom(gen);
-                if (gStr != "x") {
+                if (gStr != "") {
                     let genDOM = document.createElement("span");
                     genDOM.className = "gen";
                     genDOM.innerText = gStr;
@@ -87,7 +87,7 @@ function resolveGenom(g) {
         case 34:
             return 'GJumpEnd';
         default:
-            return "x";
+            return "";
     }
 }
 class Player {

@@ -98,7 +98,12 @@ func GeneratingNormallyDistributedWorld() []ICell {
             if liveInitDome {
                 live.genome = lives[liveIt].genome
             } else {
-                live.genome = RandGenomeGenerator()
+                switch *GeneratorType {
+                case "gwait":
+                    live.genome = GWaitGenomeGenerator()
+                case "rand":
+                    live.genome = RandGenomeGenerator()
+                }
             }
 
             lives[liveIt] = live

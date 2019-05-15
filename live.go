@@ -116,7 +116,7 @@ func (e *LiveCell) Movie(vector [2]int) error {
 	switch t := world[i].(type) {
 	case *EmptyCell:
 		// Наткнулись на пустую клетку
-		if *PrintActionPtr {
+		if *PrintActionPtr && *PrintActionLevelPtr > 2 {
 			fmt.Printf("[%s.%d] move (%d,%d)\n", e.name, e.health, movieX, movieY)
 		}
 
@@ -131,7 +131,7 @@ func (e *LiveCell) Movie(vector [2]int) error {
 
 	case *PoisonCell:
 		// Наступили на яд
-		if *PrintActionPtr {
+		if *PrintActionPtr && *PrintActionLevelPtr > 2 {
 			fmt.Printf("[%s.%d] move and die (poison)\n", e.name, e.health)
 		}
 
@@ -141,7 +141,7 @@ func (e *LiveCell) Movie(vector [2]int) error {
 
 	case *EatCell:
 		// Наступили на еду
-		if *PrintActionPtr {
+		if *PrintActionPtr && *PrintActionLevelPtr > 2 {
 			fmt.Printf("[%s.%d] move and eat\n", e.name, e.health)
 		}
 
@@ -164,6 +164,14 @@ func (e *LiveCell) Movie(vector [2]int) error {
 
 	// ОК
 	return nil
+}
+
+func GWaitGenomeGenerator() Genome {
+	var genome Genome
+	for index := range genome {
+		genome[index] = GWait
+	}
+	return genome
 }
 
 func RandGenomeGenerator() Genome {
@@ -208,9 +216,7 @@ const (
 func (e *LiveCell) Action() {
 	defer wg.Done()
 
-	if *PrintActionPtr && *PrintActionLevelPtr > 1 {
-		log(fmt.Sprintf("GENOM %s %d\n", e.name, e.genome))
-	}
+	log(fmt.Sprintf("GENOM %s %d\n", e.name, e.genome))
 
 	// Цикл крутится пока не закончатся ХП
 	for it := 0; e.IsLive(); e.health-- {

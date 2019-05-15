@@ -25,8 +25,9 @@ var (
     HeightPtr           = flag.Int("w-height", 32, "World height")
     SizeCellPtr         = flag.Int("w-size-cell", 4, "World size cell")
     PrintActionPtr      = flag.Bool("make-log", true, "Print action")
-    PrintActionLevelPtr = flag.Int("log-level", 3, "Print action level")
+    PrintActionLevelPtr = flag.Int("log-level", 0, "Print action level")
     LogFile             = flag.String("log-file", "sim.log", "Log filename")
+    GeneratorType       = flag.String("gen-type", "gwait", "Type of generator genome")
 )
 
 func main() {
@@ -49,13 +50,15 @@ func main() {
 
     log("VERSION 2\n")
 
+    eph := 1
     for {
         start := time.Now()
 
         loop()
 
         elapsed := time.Since(start)
-        fmt.Printf("\rBinomial took %s", elapsed)
+        fmt.Printf("\rBinomial took %s, %d", elapsed, eph)
+        eph++
     }
 }
 
