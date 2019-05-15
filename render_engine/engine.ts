@@ -1,8 +1,12 @@
 class Render {
-    public canvas: HTMLCanvasElement = <HTMLCanvasElement>document.getElementById('canvas');
-    public context: CanvasRenderingContext2D = <CanvasRenderingContext2D>this.canvas.getContext("2d");
+    public canvas: HTMLCanvasElement =
+        <HTMLCanvasElement>document.getElementById('canvas');
 
-    genomPlace: HTMLElement = <HTMLElement>document.getElementById('genom');
+    public context: CanvasRenderingContext2D =
+        <CanvasRenderingContext2D>this.canvas.getContext("2d");
+
+    genomPlace: HTMLElement =
+        <HTMLElement>document.getElementById('genom');
 
 
     constructor() {
@@ -14,7 +18,7 @@ class Render {
     render_genom(gen: number[]) {
         this.genomPlace.innerHTML = "";
         for (const g of gen) {
-            this.genomPlace.innerHTML += resolveGenom(g)+"<br>";
+            this.genomPlace.innerHTML += resolveGenom(g) + "<br>";
         }
     }
 
@@ -29,7 +33,7 @@ class Render {
     }
 }
 
-function resolveGenom(g:number) :string{
+function resolveGenom(g: number): string {
     switch (g) {
         case 0:
             return 'GWait';
@@ -58,8 +62,7 @@ function resolveGenom(g:number) :string{
         case 8:
             return 'GMoveDownRight';
 
-            // Посмотреть
-
+        // Посмотреть
         case 9:
             return 'GSeeUp';
 
@@ -84,17 +87,16 @@ function resolveGenom(g:number) :string{
         case 16:
             return 'GSeeDownRight';
 
-            // Конец команд
-
+        // Конец команд
         case 17:
             return 'GEnd';
-
 
         case 18:
             return 'GJumpStart';
 
         case 34:
             return 'GJumpEnd';
+
         default:
             return "x";
     }
@@ -105,9 +107,11 @@ class Player {
 
     render: Render = new Render();
 
-    epochCounter: HTMLInputElement = <HTMLInputElement>document.getElementById('epochCounter');
+    epochCounter: HTMLInputElement =
+        <HTMLInputElement>document.getElementById('epochCounter');
 
-    public epoch_id: HTMLInputElement = <HTMLInputElement>document.getElementById('epoch_id');
+    public epoch_id: HTMLInputElement =
+        <HTMLInputElement>document.getElementById('epoch_id');
 
     constructor() {
 
@@ -140,7 +144,10 @@ class Player {
                     case "I": {
                         const e = this.epoches[e_id];
                         let position = current[2].split(',');
-                        e.init(resolveType(current[1]), new Position(parseInt(position[0]), parseInt(position[1])));
+                        e.init(
+                            resolveType(current[1]),
+                            new Position(parseInt(position[0]), parseInt(position[1]))
+                        );
                         return;
                     }
 
@@ -246,7 +253,12 @@ class BaseElement {
 }
 
 class SnapshotElement {
-    constructor(public id: string, public type: ActionType, public p1: Position, public p2?: Position) {
+    constructor(
+        public id: string,
+        public type: ActionType,
+        public p1: Position,
+        public p2?: Position
+    ) {
 
     }
 
@@ -287,7 +299,8 @@ class Epoch {
 
     public genom = [];
 
-    cur_log: HTMLInputElement = <HTMLInputElement>document.getElementById('current');
+    cur_log: HTMLInputElement =
+        <HTMLInputElement>document.getElementById('current');
 
     constructor(private render: Render, public id: string) {
 
