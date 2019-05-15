@@ -12,14 +12,25 @@ class Render {
         this.canvas = document.getElementById('canvas');
         this.context = this.canvas.getContext("2d");
         this.genomPlace = document.getElementById('genom');
-        this.canvas.width = 700;
-        this.canvas.height = 500;
+        this.canvas.width = 640;
+        this.canvas.height = 320;
         this.context.scale(10, 10);
     }
-    render_genom(gen) {
+    render_genom(genoms) {
         this.genomPlace.innerHTML = "";
-        for (const g of gen) {
-            this.genomPlace.innerHTML += resolveGenom(g) + "<br>";
+        for (const genom of genoms) {
+            let genomDOM = document.createElement("div");
+            genomDOM.className = "genom";
+            for (const gen of genom) {
+                const gStr = resolveGenom(gen);
+                if (gStr != "x") {
+                    let genDOM = document.createElement("span");
+                    genDOM.className = "gen";
+                    genDOM.innerText = gStr;
+                    genomDOM.appendChild(genDOM);
+                }
+            }
+            this.genomPlace.appendChild(genomDOM);
         }
     }
     clear() {
@@ -116,8 +127,7 @@ class Player {
                 }
                 case "GENOM": {
                     const e = this.epoches[e_id];
-                    let genomStr = current.slice(2).join(",");
-                    e.genom = JSON.parse(genomStr);
+                    e.genom.push(JSON.parse(current.slice(2).join(",")));
                     return;
                 }
                 case "S": {

@@ -1,35 +1,50 @@
 ﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Log viewer</title>
+
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<p>Фаил с жизнью</p>
-<input type="file" id="file">
-<br>
-<p id="epochCounter"></p>
-<p id="current">Текущий кадр: -</p>
-<button id='last'>Предыдущий кадр</button>
-<button id='next'>Следующий кадр</button>
-<button id='auto'>Авто</button>
-<button id='stop'>Стоп</button>
-<label for="epoch_id">Эпоха</label><input type="text" value="0" id="epoch_id" disabled>
-<button id='lastEpoch'>Прошлая эпоха</button>
-<button id='nextEpoch'>Следующая эпоха</button>
-<label for="speed"></label><input type="range" min="1" max="100" value="10" id="speed">
-<br><br>
-<canvas id='canvas'></canvas>
+<div class="load">
+    <span class="load-span">Лог:</span>
+    <input type="file" id="file">
+</div>
+
+<div class="control">
+    <button id='last' disabled><i class="material-icons">skip_previous</i></button>
+    <span>Кадр</span>
+    <button id='next' disabled><i class="material-icons">skip_next</i></button>
+    <button id='auto'><i class="material-icons">play_arrow</i></button>
+    <button id='stop' disabled><i class="material-icons">pause</i></button>
+    <label for="epoch_id">Эпоха</label><input type="text" value="0" id="epoch_id" disabled>
+    <button id='lastEpoch' disabled><i class="material-icons">skip_previous</i></button>
+    <span>Эпоха</span>
+    <button id='nextEpoch' disabled><i class="material-icons">skip_next</i></button>
+    <label for="speed">Скорость</label><input type="range" min="1" max="100" value="10" id="speed">
+</div>
+
+<div class="info">
+    <span id="epochCounter">Эпоха: -</span>
+    <span id="current">Кадр: -</span>
+</div>
+
+<div class="canv">
+    <canvas id='canvas'></canvas>
+</div>
 
 <div id="genom"></div>
 
 <script>var exports = {};</script>
-<script type="module" src="engine.js">
-</script>
+<script type="module" src="engine.js"></script>
 
 </body>
 </html>

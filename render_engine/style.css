@@ -1,0 +1,56 @@
+body {
+  background-color: #f3f3f3;
+  width: 980px;
+  padding: 0 28px;
+  margin: 32px auto 0;
+  font-family: 'Open Sans', sans-serif;
+}
+button,
+input {
+  font-family: 'Roboto', sans-serif;
+}
+#canvas {
+  border: 1px solid black;
+  margin: 0 auto 12px;
+}
+.canv {
+  display: flex;
+}
+.info {
+  display: flex;
+  flex-direction: column;
+}
+.load {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.load-span {
+  margin-right: 12px;
+}
+.control {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.control > * {
+  margin-right: 8px;
+}
+.control > *:last-child {
+  margin-right: 0;
+}
+#genom {
+  display: flex;
+  flex-direction: row;
+  overflow-x: scroll;
+  padding: 12px;
+}
+.genom {
+  display: flex;
+  flex-direction: column;
+  padding-right: 8px;
+}
+.genom:last-child {
+  padding-right: 0;
+}
+/*# sourceMappingURL=style.css.map */
