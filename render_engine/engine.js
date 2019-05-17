@@ -21,14 +21,16 @@ class Render {
         for (const genom of genoms) {
             let genomDOM = document.createElement("div");
             genomDOM.className = "genom";
+            let i = 0;
             for (const gen of genom) {
                 const gStr = resolveGenom(gen);
                 if (gStr != "") {
                     let genDOM = document.createElement("span");
                     genDOM.className = "gen";
-                    genDOM.innerText = gStr;
+                    genDOM.innerText = `${i} ${gStr}`;
                     genomDOM.appendChild(genDOM);
                 }
+                i++;
             }
             this.genomPlace.appendChild(genomDOM);
         }
@@ -79,14 +81,58 @@ function resolveGenom(g) {
             return 'GSeeDownLeft';
         case 16:
             return 'GSeeDownRight';
-        // Конец команд
         case 17:
-            return 'GEnd';
+            return 'GEatUp';
         case 18:
-            return 'GJumpStart';
+            return 'GEatUpLeft';
+        case 19:
+            return 'GEatUpRight';
+        case 20:
+            return 'GEatLeft';
+        case 21:
+            return 'GEatRight';
+        case 22:
+            return 'GEatDown';
+        case 23:
+            return 'GEatDownLeft';
+        case 24:
+            return 'GEatDownRight';
+        case 25:
+            return 'GAttackUp';
+        case 26:
+            return 'GAttackUpLeft';
+        case 27:
+            return 'GAttackUpRight';
+        case 28:
+            return 'GAttackLeft';
+        case 29:
+            return 'GAttackRight';
+        case 30:
+            return 'GAttackDown';
+        case 31:
+            return 'GAttackDownLeft';
+        case 32:
+            return 'GAttackDownRight';
+        case 33:
+            return 'GRecycleUp';
         case 34:
-            return 'GJumpEnd';
+            return 'GRecycleUpLeft';
+        case 35:
+            return 'GRecycleUpRight';
+        case 36:
+            return 'GRecycleLeft';
+        case 37:
+            return 'GRecycleRight';
+        case 38:
+            return 'GRecycleDown';
+        case 39:
+            return 'GRecycleDownLeft';
+        case 40:
+            return 'GRecycleDownRight';
         default:
+            if (g >= 42 && g <= 82) {
+                return `GJumpTo_${g - 42}`;
+            }
             return "";
     }
 }

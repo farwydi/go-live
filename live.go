@@ -100,6 +100,75 @@ func (e *LiveCell) See(vector [2]int) int {
     return 1
 }
 
+func (e *LiveCell) Eat(vector [2]int) {
+    X := e.cell.X + vector[0]
+    Y := e.cell.Y - vector[1]
+
+    i, err := resolveXY(X, Y)
+    if err != nil {
+        // Идём дальше
+        return
+    }
+
+    switch world[i].(type) {
+    case *EatCell:
+        e.health += 10
+    case *PoisonCell:
+        e.health = 0
+    case *EmptyCell:
+        e.health -= 1
+    case *WellCell:
+        e.health -= 10
+    }
+}
+
+func (e *LiveCell) Recycle(vector [2]int) {
+    X := e.cell.X + vector[0]
+    Y := e.cell.Y - vector[1]
+
+    i, err := resolveXY(X, Y)
+    if err != nil {
+        // Идём дальше
+        return
+    }
+
+    switch world[i].(type) {
+    case *EatCell:
+        e.health -= 10
+        world[i] = CreatePoisonCell(X, Y)
+    case *PoisonCell:
+        world[i] = CreateEatCell(X, Y)
+    case *EmptyCell:
+        e.health -= 1
+    case *WellCell:
+        e.health -= 10
+    }
+}
+
+func (e *LiveCell) Attack(vector [2]int) {
+    X := e.cell.X + vector[0]
+    Y := e.cell.Y - vector[1]
+
+    i, err := resolveXY(X, Y)
+    if err != nil {
+        // Идём дальше
+        return
+    }
+
+    switch t := world[i].(type) {
+    case *LiveCell:
+        t.health -= 10
+    case *EatCell:
+        world[i] = CreateEmptyCell(X, Y)
+    case *PoisonCell:
+        world[i] = CreateEmptyCell(X, Y)
+    case *EmptyCell:
+        e.health -= 1
+    case *WellCell:
+        e.health -= 10
+    }
+}
+
 func (e *LiveCell) Move(vector [2]int) error {
 
     // movieX, movieY - координаты движения
@@ -206,6 +275,33 @@ const (
     GSeeDownLeft
     GSeeDownRight
 
+    GEatUp
+    GEatUpLeft
+    GEatUpRight
+    GEatLeft
+    GEatRight
+    GEatDown
+    GEatDownLeft
+    GEatDownRight
+
+    GAttackUp
+    GAttackUpLeft
+    GAttackUpRight
+    GAttackLeft
+    GAttackRight
+    GAttackDown
+    GAttackDownLeft
+    GAttackDownRight
+
+    GRecycleUp
+    GRecycleUpLeft
+    GRecycleUpRight
+    GRecycleLeft
+    GRecycleRight
+    GRecycleDown
+    GRecycleDownLeft
+    GRecycleDownRight
+
     // Конец команд
     GEnd
 
@@ -263,6 +359,57 @@ func (e *LiveCell) Action() {
             e.Move(Left)
         case GMoveUpLeft:
             e.Move(UpLeft)
+
+        case GAttackUp:
+            e.Attack(Up)
+        case GAttackUpRight:
+            e.Attack(UpRight)
+        case GAttackRight:
+            e.Attack(Right)
+        case GAttackDownRight:
+            e.Attack(DownRight)
+        case GAttackDown:
+            e.Attack(Down)
+        case GAttackDownLeft:
+            e.Attack(DownLeft)
+        case GAttackLeft:
+            e.Attack(Left)
+        case GAttackUpLeft:
+            e.Attack(UpLeft)
+
+        case GEatUp:
+            e.Eat(Up)
+        case GEatUpRight:
+            e.Eat(UpRight)
+        case GEatRight:
+            e.Eat(Right)
+        case GEatDownRight:
+            e.Eat(DownRight)
+        case GEatDown:
+            e.Eat(Down)
+        case GEatDownLeft:
+            e.Eat(DownLeft)
+        case GEatLeft:
+            e.Eat(Left)
+        case GEatUpLeft:
+            e.Eat(UpLeft)
+
+        case GRecycleUp:
+            e.Recycle(Up)
+        case GRecycleUpRight:
+            e.Recycle(UpRight)
+        case GRecycleRight:
+            e.Recycle(Right)
+        case GRecycleDownRight:
+            e.Recycle(DownRight)
+        case GRecycleDown:
+            e.Recycle(Down)
+        case GRecycleDownLeft:
+            e.Recycle(DownLeft)
+        case GRecycleLeft:
+            e.Recycle(Left)
+        case GRecycleUpLeft:
+            e.Recycle(UpLeft)
 
         default:
             jumpTo := int(e.genome[it])
