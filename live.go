@@ -100,7 +100,7 @@ func (e *LiveCell) See(vector [2]int) int {
 	return 1
 }
 
-func (e *LiveCell) Movie(vector [2]int) error {
+func (e *LiveCell) Move(vector [2]int) error {
 
 	// movieX, movieY - координаты движения
 	// i - адрес в массиве
@@ -226,43 +226,43 @@ func (e *LiveCell) Action() {
 
 		case GWait:
 			// Ничего не делать
-			if *PrintActionPtr && *PrintActionLevelPtr > 2 {
+			if *PrintActionPtr && *PrintActionLevelPtr > 3 {
 				fmt.Printf("[%s.%d] wait\n", e.name, e.health)
 			}
 
 		case GSeeUp:
-			it = e.See(Up)
+			it += e.See(Up)
 		case GSeeUpRight:
-			it = e.See(UpRight)
+			it += e.See(UpRight)
 		case GSeeRight:
-			it = e.See(Right)
+			it += e.See(Right)
 		case GSeeDownRight:
-			it = e.See(DownRight)
+			it += e.See(DownRight)
 		case GSeeDown:
-			it = e.See(Down)
+			it += e.See(Down)
 		case GSeeDownLeft:
-			it = e.See(DownLeft)
+			it += e.See(DownLeft)
 		case GSeeLeft:
-			it = e.See(Left)
+			it += e.See(Left)
 		case GSeeUpLeft:
-			it = e.See(UpLeft)
+			it += e.See(UpLeft)
 
 		case GMoveUp:
-			e.Movie(Up)
+			e.Move(Up)
 		case GMoveUpRight:
-			e.Movie(UpRight)
+			e.Move(UpRight)
 		case GMoveRight:
-			e.Movie(Right)
+			e.Move(Right)
 		case GMoveDownRight:
-			e.Movie(DownRight)
+			e.Move(DownRight)
 		case GMoveDown:
-			e.Movie(Down)
+			e.Move(Down)
 		case GMoveDownLeft:
-			e.Movie(DownLeft)
+			e.Move(DownLeft)
 		case GMoveLeft:
-			e.Movie(Left)
+			e.Move(Left)
 		case GMoveUpLeft:
-			e.Movie(UpLeft)
+			e.Move(UpLeft)
 
 		default:
 			jumpTo := int(e.genome[it])
@@ -271,7 +271,7 @@ func (e *LiveCell) Action() {
 			case jumpTo >= GJumpStart && jumpTo <= GJumpEnd:
 				// Безусловный переход
 				if *PrintActionPtr && *PrintActionLevelPtr > 2 {
-					fmt.Printf("[%s.%d] seek %d\n", e.name, e.health, jumpTo)
+					fmt.Printf("[%s.%d] jumpTo %d\n", e.name, e.health, jumpTo)
 				}
 				it = jumpTo - (GEnd + 1)
 			default:
