@@ -91,20 +91,99 @@ function resolveGenom(g) {
     }
 }
 class Player {
-    constructor() {
+    constructor(played = false) {
+        this.played = played;
         this.epoches = [];
         this.render = new Render();
         this.epochCounter = document.getElementById('epochCounter');
         this.epoch_id = document.getElementById('epoch_id');
+        this.cur_log = document.getElementById('current');
+        this.speed = document.getElementById('speed');
+        this.last = document.getElementById('last');
+        this.next = document.getElementById('next');
+        this.eph_target = 0;
+        this.shot_target = 0;
+        this.epoch_id.onchange = (e) => {
+            if (e.target != null) {
+                // @ts-ignore
+                this.eph_target = parseInt(e.target.value);
+                if (this.eph_target < 0) {
+                    this.eph_target = 0;
+                }
+                if (this.eph_target > this.epoches.length - 1) {
+                    this.eph_target = 0;
+                }
+            }
+        };
+    }
+    disable() {
+        this.epoch_id.disabled = true;
+        this.next.disabled = true;
+        this.last.disabled = true;
+    }
+    enable() {
+        this.epoch_id.disabled = false;
+        this.next.disabled = false;
+        this.last.disabled = false;
+    }
+    stop() {
+        this.played = false;
+        this.enable();
+    }
+    shot(s) {
+        s.render(this.render.context);
+        this.cur_log.innerText =
+            `Кадр: ${this.shot_target + 1}:${this.epoches[this.eph_target].snapshot.length}`;
+    }
+    prev_shot() {
+        let eh = this.epoches[this.eph_target];
+        this.shot_target--;
+        if (this.shot_target < 0) {
+            this.shot_target = 0;
+            // prev_eph
+            return;
+        }
+        // let ps = eh.snapshot[this.shot_target - 1];
+        // switch (ps.type) {
+        //     case ActionType.A_EAT:
+        //
+        // }
+        this.shot(eh.snapshot[this.shot_target]);
+    }
+    next_shot() {
+        let eh = this.epoches[this.eph_target];
+        this.shot_target++;
+        if (this.shot_target > eh.snapshot.length - 1) {
+            // next_eph
+            return;
+        }
+        this.shot(eh.snapshot[this.shot_target]);
     }
     play() {
         return __awaiter(this, void 0, void 0, function* () {
-            for (const eh of this.epoches) {
-                this.epochCounter.innerText = `Эпоха: ${eh.id}`;
-                this.epoch_id.value = eh.id;
+            this.played = true;
+            this.disable();
+            for (; this.eph_target < this.epoches.length; this.eph_target++) {
+                if (!this.played) {
+                    this.enable();
+                    return;
+                }
+                let eh = this.epoches[this.eph_target];
+                this.epochCounter.innerText = `Эпоха: ${this.eph_target + 1}:${this.epoches.length}`;
+                this.epoch_id.value = this.eph_target.toString();
                 eh.pre_render();
-                yield eh.play();
+                for (; this.shot_target < eh.snapshot.length; this.shot_target++) {
+                    if (!this.played) {
+                        this.enable();
+                        return;
+                    }
+                    this.shot(eh.snapshot[this.shot_target]);
+                    yield sleep(parseInt(this.speed.value));
+                }
+                this.shot_target = 0;
             }
+            this.played = false;
+            this.enable();
         });
     }
     load(log) {
@@ -255,20 +334,9 @@ class Epoch {
         this.zero = [];
         this.snapshot = [];
         this.genom = [];
-        this.cur_log = document.getElementById('current');
-        this.speed = document.getElementById('speed');
     }
     get count() {
         return this.snapshot.length;
-    }
-    play() {
-        return __awaiter(this, void 0, void 0, function* () {
-            for (const s of this.snapshot) {
-                s.render(this.render.context);
-                this.cur_log.innerText = `Кадр: ${s.id}`;
-                yield sleep(parseInt(this.speed.value));
-            }
-        });
     }
     append(action, cmd) {
         if (action == ActionType.A_UNKNOWN) {
@@ -325,5 +393,23 @@ if (autoBtn != null) {
     autoBtn.addEventListener('click', () => __awaiter(this, void 0, void 0, function* () {
         yield player.play();
     }));
+}
+const stopBtn = document.getElementById('stop');
+if (stopBtn != null) {
+    stopBtn.addEventListener('click', () => {
+        player.stop();
+    });
+}
+const nextBtn = document.getElementById('next');
+if (nextBtn != null) {
+    nextBtn.addEventListener('click', () => {
+        player.next_shot();
+    });
+}
+const lastBtn = document.getElementById('last');
+if (lastBtn != null) {
+    lastBtn.addEventListener('click', () => {
+        player.prev_shot();
+    });
 }
 //# sourceMappingURL=engine.js.map

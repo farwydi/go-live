@@ -26,7 +26,7 @@ var (
     SizeCellPtr         = flag.Int("w-size-cell", 4, "World size cell")
     PrintActionPtr      = flag.Bool("make-log", true, "Print action")
     PrintActionLevelPtr = flag.Int("log-level", 0, "Print action level")
-    LogFile             = flag.String("log-file", "sim.log", "Log filename")
+    LogFile             = flag.String("log-file", "render_engine/sim.log", "Log filename")
     GeneratorType       = flag.String("gen-type", "gwait", "Type of generator genome")
 )
 

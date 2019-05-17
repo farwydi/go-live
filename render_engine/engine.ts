@@ -124,21 +124,129 @@ class Player {
     epochCounter: HTMLInputElement =
         <HTMLInputElement>document.getElementById('epochCounter');
 
-    public epoch_id: HTMLInputElement =
+    epoch_id: HTMLInputElement =
         <HTMLInputElement>document.getElementById('epoch_id');
 
-    constructor() {
+    cur_log: HTMLInputElement =
+        <HTMLInputElement>document.getElementById('current');
 
+    speed: HTMLInputElement =
+        <HTMLInputElement>document.getElementById('speed');
+
+    last: HTMLInputElement =
+        <HTMLInputElement>document.getElementById('last');
+
+    next: HTMLInputElement =
+        <HTMLInputElement>document.getElementById('next');
+
+    constructor(public played: boolean = false) {
+        this.epoch_id.onchange = (e: Event) => {
+            if (e.target != null) {
+                // @ts-ignore
+                this.eph_target = parseInt(e.target.value);
+
+                if (this.eph_target < 0) {
+                    this.eph_target = 0;
+                }
+
+                if (this.eph_target > this.epoches.length - 1) {
+                    this.eph_target = 0;
+                }
+            }
+        }
+    }
+
+    eph_target = 0;
+    shot_target = 0;
+
+    disable() {
+        this.epoch_id.disabled = true;
+        this.next.disabled = true;
+        this.last.disabled = true;
+    }
+
+    enable() {
+        this.epoch_id.disabled = false;
+        this.next.disabled = false;
+        this.last.disabled = false;
+    }
+
+    stop() {
+        this.played = false;
+        this.enable();
+    }
+
+    shot(s: SnapshotElement) {
+        s.render(this.render.context);
+
+        this.cur_log.innerText =
+            `Кадр: ${this.shot_target + 1}:${this.epoches[this.eph_target].snapshot.length}`;
+    }
+
+    prev_shot() {
+        let eh = this.epoches[this.eph_target];
+        this.shot_target--;
+
+        if (this.shot_target < 0) {
+            this.shot_target = 0;
+            // prev_eph
+            return;
+        }
+
+        // let ps = eh.snapshot[this.shot_target - 1];
+
+        // switch (ps.type) {
+        //     case ActionType.A_EAT:
+        //
+        // }
+
+        this.shot(eh.snapshot[this.shot_target]);
+    }
+
+    next_shot() {
+        let eh = this.epoches[this.eph_target];
+        this.shot_target++;
+
+        if (this.shot_target > eh.snapshot.length - 1) {
+            // next_eph
+            return;
+        }
+
+        this.shot(eh.snapshot[this.shot_target]);
     }
 
     async play() {
-        for (const eh of this.epoches) {
-            this.epochCounter.innerText = `Эпоха: ${eh.id}`;
-            this.epoch_id.value = eh.id;
+        this.played = true;
+        this.disable();
+
+        for (; this.eph_target < this.epoches.length; this.eph_target++) {
+            if (!this.played) {
+                this.enable();
+                return;
+            }
+
+            let eh = this.epoches[this.eph_target];
+
+            this.epochCounter.innerText = `Эпоха: ${this.eph_target + 1}:${this.epoches.length}`;
+            this.epoch_id.value = this.eph_target.toString();
 
             eh.pre_render();
-            await eh.play();
+
+            for (; this.shot_target < eh.snapshot.length; this.shot_target++) {
+                if (!this.played) {
+                    this.enable();
+                    return;
+                }
+
+                this.shot(eh.snapshot[this.shot_target]);
+
+                await sleep(parseInt(this.speed.value));
+            }
+            this.shot_target = 0
         }
+
+        this.played = false;
+        this.enable();
     }
 
     load(log: string) {
@@ -312,27 +420,12 @@ class Epoch {
 
     public genom: number[][] = [];
 
-    cur_log: HTMLInputElement =
-        <HTMLInputElement>document.getElementById('current');
-
     constructor(private render: Render, public id: string) {
 
     }
 
     get count(): number {
         return this.snapshot.length
-    }
-
-    speed: HTMLInputElement = <HTMLInputElement>document.getElementById('speed');
-
-    async play() {
-        for (const s of this.snapshot) {
-            s.render(this.render.context);
-
-            this.cur_log.innerText = `Кадр: ${s.id}`;
-
-            await sleep(parseInt(this.speed.value));
-        }
     }
 
     append(action: ActionType, cmd: string[]) {
@@ -412,5 +505,26 @@ const autoBtn = document.getElementById('auto');
 if (autoBtn != null) {
     autoBtn.addEventListener('click', async () => {
         await player.play()
+    });
+}
+
+const stopBtn = document.getElementById('stop');
+if (stopBtn != null) {
+    stopBtn.addEventListener('click', () => {
+        player.stop();
+    });
+}
+
+const nextBtn = document.getElementById('next');
+if (nextBtn != null) {
+    nextBtn.addEventListener('click', () => {
+        player.next_shot();
+    });
+}
+
+const lastBtn = document.getElementById('last');
+if (lastBtn != null) {
+    lastBtn.addEventListener('click', () => {
+        player.prev_shot();
     });
 }
