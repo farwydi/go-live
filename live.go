@@ -428,15 +428,20 @@ func (e *LiveCell) Action() bool {
         e.Recycle(UpLeft)
 
     default:
-        switch {
-        // Это номер в геноме куда переместить указатель
-        case e.it >= GJumpStart && e.it <= GJumpEnd:
-            // Безусловный переход
-            if *PrintActionPtr && *PrintActionLevelPtr > 2 {
-                fmt.Printf("[%s.%d] jumpTo %d\n", e.name, e.health, e.it)
+        if *JumpEnable {
+            switch {
+            // Это номер в геноме куда переместить указатель
+            case e.it >= GJumpStart && e.it <= GJumpEnd:
+                // Безусловный переход
+                if *PrintActionPtr && *PrintActionLevelPtr > 2 {
+                    fmt.Printf("[%s.%d] jumpTo %d\n", e.name, e.health, e.it)
+                }
+                e.it -= GEnd + 1
+            default:
+                // Неизвестная команда
+                e.it++
             }
-            e.it -= GEnd + 1
-        default:
+        } else {
             // Неизвестная команда
             e.it++
         }

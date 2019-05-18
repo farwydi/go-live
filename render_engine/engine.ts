@@ -133,6 +133,7 @@ function resolveGenom(g: number): string {
         default:
             if (g >= 42 && g <= 82) {
                 return `GJumpTo_${g - 42}`;
+                // return "";
             }
 
             return "";
@@ -312,6 +313,10 @@ class Player {
 
                         e.genom.push(JSON.parse(current.slice(2).join(",")));
 
+                        return;
+                    }
+
+                    case "MUTATION": {
                         return;
                     }
 

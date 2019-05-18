@@ -43,7 +43,7 @@ func Simulate() {
     //leader := lives[:CountLiveCell/2]
 
     for i := 0; i < CountLiveCell/2; i++ {
-        lives[i+CountLiveCell/2].genome = Merge(lives[i].genome, lives[i+1].genome)
+        lives[i+CountLiveCell/2].genome = MutationStd(MergeStd(lives[i].genome, lives[i+1].genome))
     }
 
     s := "\r"

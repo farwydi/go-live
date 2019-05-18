@@ -124,6 +124,7 @@ function resolveGenom(g) {
         default:
             if (g >= 42 && g <= 82) {
                 return `GJumpTo_${g - 42}`;
+                // return "";
             }
             return "";
     }
@@ -255,6 +256,9 @@ class Player {
                 case "GENOM": {
                     const e = this.epoches[e_id];
                     e.genom.push(JSON.parse(current.slice(2).join(",")));
+                    return;
+                }
+                case "MUTATION": {
                     return;
                 }
                 case "S": {

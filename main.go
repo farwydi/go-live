@@ -30,6 +30,7 @@ var (
     LogFile             = flag.String("log-file", "render_engine/sim.log", "Log filename")
     GeneratorType       = flag.String("gen-type", "gwait", "Type of generator genome")
     GenomeSkip          = flag.Int64("gen-skip", 100, "Log every %n epoch")
+    JumpEnable          = flag.Bool("jump", true, "genome jumper")
 )
 
 func main() {

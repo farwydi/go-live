@@ -1,5 +1,7 @@
 package main
 
+import "math/rand"
+
 // Механизм селекции
 
 func inArray(b int, arr [GenomeHalfSize]int) bool {
@@ -12,7 +14,34 @@ func inArray(b int, arr [GenomeHalfSize]int) bool {
     return false
 }
 
-func Merge(genome1, genome2 Genome) Genome {
+func MutationStd(genome Genome) Genome {
+    r := rand.Intn(101)
+    if r > 99 {
+        genome[RandomGenPosition()] = RandomGen()
+        log("MUTATION")
+    }
+
+    return genome
+}
+
+// Стондартный метод скрещивания
+// Случайная точка разреза
+// Честь от 1го часть от в 2го
+func MergeStd(genome1, genome2 Genome) (genome Genome) {
+    point := RandomGenPosition()
+
+    for i := 0; i < GenomeSize; i++ {
+        if i > point {
+            genome[i] = genome2[i]
+        } else {
+            genome[i] = genome1[i]
+        }
+    }
+
+    return
+}
+
+func MergeWTF(genome1, genome2 Genome) Genome {
 
     // Создаём список длиной половиной генома
     // И заполняем его случайными номерами адресов генома
