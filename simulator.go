@@ -3,7 +3,6 @@ package main
 import (
     "fmt"
     "sort"
-    "strconv"
 )
 
 // Функции запуска симуляции
@@ -47,12 +46,6 @@ func Simulate() {
         lives[i+CountLiveCell/2].genome = MutationStd(MergeStd(lives[i].genome, lives[i+1].genome))
     }
 
-    s := "\r"
-
-    for i := 0; i < 10; i++ {
-        s += strconv.Itoa(lives[i].score) + " "
-    }
-
-    fmt.Print(s)
+    fmt.Printf("\r%d\t", lives[0].score)
     liveInitDome = true
 }
