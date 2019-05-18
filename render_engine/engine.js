@@ -35,14 +35,6 @@ class Render {
             this.genomPlace.appendChild(genomDOM);
         }
     }
-    clear() {
-        // context.clearRect(x, y, 1, 1);
-    }
-    print(x, y) {
-        this.context.fillRect(x, y, 1, 1);
-        this.context.fillStyle = 'yellow';
-        this.context.fill();
-    }
 }
 function resolveGenom(g) {
     switch (g) {
@@ -241,7 +233,7 @@ class Player {
                 case "EPOCH": {
                     // Инициализация эпохи
                     e_id = parseInt(current[1]);
-                    this.epoches[e_id] = new Epoch(this.render, current[1]);
+                    this.epoches[e_id] = new Epoch(this.render);
                     return;
                 }
                 case "I": {
@@ -257,7 +249,6 @@ class Player {
                 }
                 case "S": {
                     const e = this.epoches[e_id];
-                    let position = current[2].split(',');
                     e.append(resolveAction(current[1]), [...current.slice(2)]);
                     return;
                 }
@@ -341,8 +332,7 @@ class BaseElement {
     }
 }
 class SnapshotElement {
-    constructor(id, type, p1, p2) {
-        this.id = id;
+    constructor(type, p1, p2) {
         this.type = type;
         this.p1 = p1;
         this.p2 = p2;
@@ -370,19 +360,12 @@ class SnapshotElement {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-function resolveXY(x, y) {
-    return (32 * x) + y;
-}
 class Epoch {
-    constructor(render, id) {
+    constructor(render) {
         this.render = render;
-        this.id = id;
         this.zero = [];
         this.snapshot = [];
         this.genom = [];
-    }
-    get count() {
-        return this.snapshot.length;
     }
     append(action, cmd) {
         if (action == ActionType.A_UNKNOWN) {
@@ -391,14 +374,14 @@ class Epoch {
         switch (action) {
             case ActionType.A_DEI: {
                 let position = cmd[0].split(',');
-                this.snapshot.push(new SnapshotElement(this.snapshot.length.toString(), action, new Position(parseInt(position[0]), parseInt(position[1]))));
+                this.snapshot.push(new SnapshotElement(action, new Position(parseInt(position[0]), parseInt(position[1]))));
                 break;
             }
             case ActionType.A_EAT:
             case ActionType.A_MOVE: {
                 let on = cmd[0].split(',');
                 let to = cmd[1].split(',');
-                this.snapshot.push(new SnapshotElement(this.snapshot.length.toString(), action, new Position(parseInt(on[0]), parseInt(on[1])), new Position(parseInt(to[0]), parseInt(to[1]))));
+                this.snapshot.push(new SnapshotElement(action, new Position(parseInt(on[0]), parseInt(on[1])), new Position(parseInt(to[0]), parseInt(to[1]))));
                 break;
             }
         }

@@ -21,14 +21,15 @@ func Simulate() {
     }
 
     // Цикл обработки кадра
-    var done bool
-    for done {
-        done = false
+    running := true
+    for running {
+        running = false
+
         for _, cell := range world {
             switch t := cell.(type) {
             case *LiveCell:
-                if t.Action() {
-                    done = true
+                if !t.Action() {
+                    running = true
                 }
             }
         }

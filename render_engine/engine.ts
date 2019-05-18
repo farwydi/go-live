@@ -37,16 +37,6 @@ class Render {
             this.genomPlace.appendChild(genomDOM);
         }
     }
-
-    clear() {
-        // context.clearRect(x, y, 1, 1);
-    }
-
-    print(x: number, y: number) {
-        this.context.fillRect(x, y, 1, 1);
-        this.context.fillStyle = 'yellow';
-        this.context.fill();
-    }
 }
 
 function resolveGenom(g: number): string {
@@ -292,7 +282,7 @@ class Player {
                     case "EPOCH": {
                         // Инициализация эпохи
                         e_id = parseInt(current[1]);
-                        this.epoches[e_id] = new Epoch(this.render, current[1]);
+                        this.epoches[e_id] = new Epoch(this.render);
                         return;
                     }
 
@@ -316,7 +306,6 @@ class Player {
 
                     case "S": {
                         const e = this.epoches[e_id];
-                        let position = current[2].split(',');
                         e.append(resolveAction(current[1]), [...current.slice(2)]);
                         return;
                     }
@@ -408,7 +397,6 @@ class BaseElement {
 
 class SnapshotElement {
     constructor(
-        public id: string,
         public type: ActionType,
         public p1: Position,
         public p2?: Position
@@ -443,22 +431,14 @@ function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function resolveXY(x: number, y: number): number {
-    return (32 * x) + y
-}
-
 class Epoch {
     public zero: BaseElement[] = [];
     public snapshot: SnapshotElement[] = [];
 
     public genom: number[][] = [];
 
-    constructor(private render: Render, public id: string) {
+    constructor(private render: Render) {
 
-    }
-
-    get count(): number {
-        return this.snapshot.length
     }
 
     append(action: ActionType, cmd: string[]) {
@@ -470,7 +450,6 @@ class Epoch {
             case ActionType.A_DEI: {
                 let position = cmd[0].split(',');
                 this.snapshot.push(new SnapshotElement(
-                    this.snapshot.length.toString(),
                     action,
                     new Position(parseInt(position[0]), parseInt(position[1])),
                 ));
@@ -481,7 +460,6 @@ class Epoch {
                 let on = cmd[0].split(',');
                 let to = cmd[1].split(',');
                 this.snapshot.push(new SnapshotElement(
-                    this.snapshot.length.toString(),
                     action,
                     new Position(parseInt(on[0]), parseInt(on[1])),
                     new Position(parseInt(to[0]), parseInt(to[1]))
