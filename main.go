@@ -35,7 +35,7 @@ var (
 
 func main() {
     c := make(chan os.Signal, 1)
-    signal.Notify(c, os.Interrupt)
+    signal.Notify(c)
 
     rand.Seed(*SeedPtr)
 
@@ -59,23 +59,22 @@ func main() {
     log("VERSION 2\n")
 
     eph := 1
+mainLoop:
     for {
-        start := time.Now()
-
-        loop()
-
-        elapsed := time.Since(start)
-        fmt.Printf("\rBinomial took %s, %d, %d", elapsed, eph, runtime.NumGoroutine())
-        eph++
-
         select {
         case <-c:
             fmt.Print("\nDone.")
-            doneLog()
             workLog.Wait()
-            break
+            doneLog()
+            break mainLoop
         default:
-            continue
+            start := time.Now()
+
+            loop()
+
+            elapsed := time.Since(start)
+            fmt.Printf("\rBinomial took %s, %d, %d", elapsed, eph, runtime.NumGoroutine())
+            eph++
         }
     }
 }

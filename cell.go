@@ -3,7 +3,7 @@ package main
 // Модель клетки, ячейки базовый объект, пустота
 
 type ICell interface {
-    Action()
+    Action() bool
 }
 
 type Cell struct {

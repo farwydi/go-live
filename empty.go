@@ -11,6 +11,6 @@ type EmptyCell struct {
     cell Cell
 }
 
-func (e *EmptyCell) Action() {
-    defer wg.Done()
+func (e *EmptyCell) Action() bool {
+    return true
 }

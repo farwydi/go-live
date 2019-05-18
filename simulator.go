@@ -14,15 +14,15 @@ func Simulate() {
     }
 
     // Цикл обработки кадра
-    for _, cell := range world {
-
-        // Отпускаем клетку думать
-        wg.Add(1)
-        go cell.Action()
+    var done bool
+    for done {
+        done = false
+        for _, cell := range world {
+            if cell.Action() {
+                done = true
+            }
+        }
     }
-
-    // Ожидание
-    wg.Wait()
 
     // Селекция
     sort.Sort(lives)

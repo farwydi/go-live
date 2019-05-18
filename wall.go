@@ -15,6 +15,6 @@ type WellCell struct {
     cell Cell
 }
 
-func (e *WellCell) Action() {
-    defer wg.Done()
+func (e *WellCell) Action() bool {
+    return true
 }

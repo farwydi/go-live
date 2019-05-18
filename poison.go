@@ -15,6 +15,6 @@ type PoisonCell struct {
     cell Cell
 }
 
-func (e *PoisonCell) Action() {
-    defer wg.Done()
+func (e *PoisonCell) Action() bool {
+    return true
 }

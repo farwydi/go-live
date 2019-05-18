@@ -65,6 +65,7 @@ type LiveCell struct {
     score  int // рейтинг клетки
     name   string
     id     int
+    it     int
 }
 
 func (e *LiveCell) IsLive() bool {
@@ -309,127 +310,123 @@ const (
     GJumpEnd = GJumpStart + (GEnd - 1)
 )
 
-func (e *LiveCell) Action() {
-    defer wg.Done()
+func (e *LiveCell) Action() bool {
+    //log(fmt.Sprintf("GENOM %s %d\n", e.name, e.genome))
 
-    log(fmt.Sprintf("GENOM %s %d\n", e.name, e.genome))
+    e.health--
 
-    // Цикл крутится пока не закончатся ХП
-    for it := 0; e.IsLive(); e.health-- {
+    if !e.IsLive() {
+        return true
+    }
 
-        // Выполняем команду в геноме
-        switch e.genome[it] {
+    // Выполняем команду в геноме
+    switch e.genome[e.it] {
 
-        case GWait:
-            // Ничего не делать
-            if *PrintActionPtr && *PrintActionLevelPtr > 3 {
-                fmt.Printf("[%s.%d] wait\n", e.name, e.health)
-            }
-
-        case GSeeUp:
-            it += e.See(Up)
-        case GSeeUpRight:
-            it += e.See(UpRight)
-        case GSeeRight:
-            it += e.See(Right)
-        case GSeeDownRight:
-            it += e.See(DownRight)
-        case GSeeDown:
-            it += e.See(Down)
-        case GSeeDownLeft:
-            it += e.See(DownLeft)
-        case GSeeLeft:
-            it += e.See(Left)
-        case GSeeUpLeft:
-            it += e.See(UpLeft)
-
-        case GMoveUp:
-            e.Move(Up)
-        case GMoveUpRight:
-            e.Move(UpRight)
-        case GMoveRight:
-            e.Move(Right)
-        case GMoveDownRight:
-            e.Move(DownRight)
-        case GMoveDown:
-            e.Move(Down)
-        case GMoveDownLeft:
-            e.Move(DownLeft)
-        case GMoveLeft:
-            e.Move(Left)
-        case GMoveUpLeft:
-            e.Move(UpLeft)
-
-        case GAttackUp:
-            e.Attack(Up)
-        case GAttackUpRight:
-            e.Attack(UpRight)
-        case GAttackRight:
-            e.Attack(Right)
-        case GAttackDownRight:
-            e.Attack(DownRight)
-        case GAttackDown:
-            e.Attack(Down)
-        case GAttackDownLeft:
-            e.Attack(DownLeft)
-        case GAttackLeft:
-            e.Attack(Left)
-        case GAttackUpLeft:
-            e.Attack(UpLeft)
-
-        case GEatUp:
-            e.Eat(Up)
-        case GEatUpRight:
-            e.Eat(UpRight)
-        case GEatRight:
-            e.Eat(Right)
-        case GEatDownRight:
-            e.Eat(DownRight)
-        case GEatDown:
-            e.Eat(Down)
-        case GEatDownLeft:
-            e.Eat(DownLeft)
-        case GEatLeft:
-            e.Eat(Left)
-        case GEatUpLeft:
-            e.Eat(UpLeft)
-
-        case GRecycleUp:
-            e.Recycle(Up)
-        case GRecycleUpRight:
-            e.Recycle(UpRight)
-        case GRecycleRight:
-            e.Recycle(Right)
-        case GRecycleDownRight:
-            e.Recycle(DownRight)
-        case GRecycleDown:
-            e.Recycle(Down)
-        case GRecycleDownLeft:
-            e.Recycle(DownLeft)
-        case GRecycleLeft:
-            e.Recycle(Left)
-        case GRecycleUpLeft:
-            e.Recycle(UpLeft)
-
-        default:
-            jumpTo := int(e.genome[it])
-            switch {
-            // Это номер в геноме куда переместить указатель
-            case jumpTo >= GJumpStart && jumpTo <= GJumpEnd:
-                // Безусловный переход
-                if *PrintActionPtr && *PrintActionLevelPtr > 2 {
-                    fmt.Printf("[%s.%d] jumpTo %d\n", e.name, e.health, jumpTo)
-                }
-                it = jumpTo - (GEnd + 1)
-            default:
-                // Неизвестная команда
-                it++
-            }
+    case GWait:
+        // Ничего не делать
+        if *PrintActionPtr && *PrintActionLevelPtr > 3 {
+            fmt.Printf("[%s.%d] wait\n", e.name, e.health)
         }
 
-        // Зацикливание
-        if it > GenomeSize-1 {
-            it = 0
+    case GSeeUp:
+        e.it += e.See(Up)
+    case GSeeUpRight:
+        e.it += e.See(UpRight)
+    case GSeeRight:
+        e.it += e.See(Right)
+    case GSeeDownRight:
+        e.it += e.See(DownRight)
+    case GSeeDown:
+        e.it += e.See(Down)
+    case GSeeDownLeft:
+        e.it += e.See(DownLeft)
+    case GSeeLeft:
+        e.it += e.See(Left)
+    case GSeeUpLeft:
+        e.it += e.See(UpLeft)
+
+    case GMoveUp:
+        e.Move(Up)
+    case GMoveUpRight:
+        e.Move(UpRight)
+    case GMoveRight:
+        e.Move(Right)
+    case GMoveDownRight:
+        e.Move(DownRight)
+    case GMoveDown:
+        e.Move(Down)
+    case GMoveDownLeft:
+        e.Move(DownLeft)
+    case GMoveLeft:
+        e.Move(Left)
+    case GMoveUpLeft:
+        e.Move(UpLeft)
+
+    case GAttackUp:
+        e.Attack(Up)
+    case GAttackUpRight:
+        e.Attack(UpRight)
+    case GAttackRight:
+        e.Attack(Right)
+    case GAttackDownRight:
+        e.Attack(DownRight)
+    case GAttackDown:
+        e.Attack(Down)
+    case GAttackDownLeft:
+        e.Attack(DownLeft)
+    case GAttackLeft:
+        e.Attack(Left)
+    case GAttackUpLeft:
+        e.Attack(UpLeft)
+
+    case GEatUp:
+        e.Eat(Up)
+    case GEatUpRight:
+        e.Eat(UpRight)
+    case GEatRight:
+        e.Eat(Right)
+    case GEatDownRight:
+        e.Eat(DownRight)
+    case GEatDown:
+        e.Eat(Down)
+    case GEatDownLeft:
+        e.Eat(DownLeft)
+    case GEatLeft:
+        e.Eat(Left)
+    case GEatUpLeft:
+        e.Eat(UpLeft)
+
+    case GRecycleUp:
+        e.Recycle(Up)
+    case GRecycleUpRight:
+        e.Recycle(UpRight)
+    case GRecycleRight:
+        e.Recycle(Right)
+    case GRecycleDownRight:
+        e.Recycle(DownRight)
+    case GRecycleDown:
+        e.Recycle(Down)
+    case GRecycleDownLeft:
+        e.Recycle(DownLeft)
+    case GRecycleLeft:
+        e.Recycle(Left)
+    case GRecycleUpLeft:
+        e.Recycle(UpLeft)
+
+    default:
+        switch {
+        // Это номер в геноме куда переместить указатель
+        case e.it >= GJumpStart && e.it <= GJumpEnd:
+            // Безусловный переход
+            if *PrintActionPtr && *PrintActionLevelPtr > 2 {
+                fmt.Printf("[%s.%d] jumpTo %d\n", e.name, e.health, e.it)
+            }
+            e.it -= GEnd + 1
+        default:
+            // Неизвестная команда
+            e.it++
         }
     }
+
+    return false
 }

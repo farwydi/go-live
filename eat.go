@@ -22,6 +22,6 @@ type EatCell struct {
     calories int
 }
 
-func (e *EatCell) Action() {
-    defer wg.Done()
+func (e *EatCell) Action() bool {
+    return true
 }
