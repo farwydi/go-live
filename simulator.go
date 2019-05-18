@@ -13,13 +13,23 @@ func Simulate() {
         panic("world not init")
     }
 
+    for _, cell := range world {
+        switch t := cell.(type) {
+        case *LiveCell:
+            t.PreviewGenome()
+        }
+    }
+
     // Цикл обработки кадра
     var done bool
     for done {
         done = false
         for _, cell := range world {
-            if cell.Action() {
-                done = true
+            switch t := cell.(type) {
+            case *LiveCell:
+                if t.Action() {
+                    done = true
+                }
             }
         }
     }

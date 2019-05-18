@@ -311,8 +311,6 @@ const (
 )
 
 func (e *LiveCell) Action() bool {
-    //log(fmt.Sprintf("GENOM %s %d\n", e.name, e.genome))
-
     e.health--
 
     if !e.IsLive() {
@@ -429,4 +427,8 @@ func (e *LiveCell) Action() bool {
     }
 
     return false
+}
+
+func (e *LiveCell) PreviewGenome() {
+    log(fmt.Sprintf("GENOM %s %d\n", e.name, e.genome))
 }
