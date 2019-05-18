@@ -168,8 +168,10 @@ class Player {
         this.played = false;
         this.enable();
     }
-    shot(s) {
-        s.render(this.render.context);
+    shot(ss) {
+        for (const s of ss) {
+            s.render(this.render.context);
+        }
         this.cur_log.innerText =
             `Кадр: ${this.shot_target + 1}:${this.epoches[this.eph_target].snapshot.length}`;
     }
@@ -226,6 +228,7 @@ class Player {
     }
     load(log) {
         let e_id = 0;
+        let shot = [];
         let lines = log.split("\n");
         lines.forEach((line) => {
             let current = line.split(' ');
@@ -234,6 +237,7 @@ class Player {
                     // Инициализация эпохи
                     e_id = parseInt(current[1]);
                     this.epoches[e_id] = new Epoch(this.render);
+                    shot = [];
                     return;
                 }
                 case "I": {
@@ -242,14 +246,37 @@ class Player {
                     e.init(resolveType(current[1]), new Position(parseInt(position[0]), parseInt(position[1])));
                     return;
                 }
+                case "SHOT_END": {
+                    const e = this.epoches[e_id];
+                    e.last_shot_append(shot);
+                    shot = [];
+                    return;
+                }
                 case "GENOM": {
                     const e = this.epoches[e_id];
                     e.genom.push(JSON.parse(current.slice(2).join(",")));
                     return;
                 }
                 case "S": {
-                    const e = this.epoches[e_id];
-                    e.append(resolveAction(current[1]), [...current.slice(2)]);
+                    let action = resolveAction(current[1]);
+                    let cmd = [...current.slice(2)];
+                    if (action == ActionType.A_UNKNOWN) {
+                        return;
+                    }
+                    switch (action) {
+                        case ActionType.A_DEI: {
+                            let position = cmd[0].split(',');
+                            shot.push(new SnapshotElement(action, new Position(parseInt(position[0]), parseInt(position[1]))));
+                            break;
+                        }
+                        case ActionType.A_EAT:
+                        case ActionType.A_MOVE: {
+                            let on = cmd[0].split(',');
+                            let to = cmd[1].split(',');
+                            shot.push(new SnapshotElement(action, new Position(parseInt(on[0]), parseInt(on[1])), new Position(parseInt(to[0]), parseInt(to[1]))));
+                            break;
+                        }
+                    }
                     return;
                 }
             }
@@ -367,23 +394,9 @@ class Epoch {
         this.snapshot = [];
         this.genom = [];
     }
-    append(action, cmd) {
-        if (action == ActionType.A_UNKNOWN) {
-            return;
-        }
-        switch (action) {
-            case ActionType.A_DEI: {
-                let position = cmd[0].split(',');
-                this.snapshot.push(new SnapshotElement(action, new Position(parseInt(position[0]), parseInt(position[1]))));
-                break;
-            }
-            case ActionType.A_EAT:
-            case ActionType.A_MOVE: {
-                let on = cmd[0].split(',');
-                let to = cmd[1].split(',');
-                this.snapshot.push(new SnapshotElement(action, new Position(parseInt(on[0]), parseInt(on[1])), new Position(parseInt(to[0]), parseInt(to[1]))));
-                break;
-            }
+    last_shot_append(s) {
+        if (s.length > 0) {
+            this.snapshot.push(s);
         }
     }
     init(type, position) {
