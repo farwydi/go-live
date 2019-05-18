@@ -4,6 +4,9 @@ import (
     "flag"
     "fmt"
     "math/rand"
+    "os"
+    "os/signal"
+    "runtime"
     "sync"
     "time"
 )
@@ -31,6 +34,9 @@ var (
 )
 
 func main() {
+    c := make(chan os.Signal, 1)
+    signal.Notify(c, os.Interrupt)
+
     rand.Seed(*SeedPtr)
 
     config = Config{
@@ -48,6 +54,8 @@ func main() {
 
     fmt.Printf("%+v\n", config)
 
+    go saverLog()
+
     log("VERSION 2\n")
 
     eph := 1
@@ -57,8 +65,18 @@ func main() {
         loop()
 
         elapsed := time.Since(start)
-        fmt.Printf("\rBinomial took %s, %d", elapsed, eph)
+        fmt.Printf("\rBinomial took %s, %d, %d", elapsed, eph, runtime.NumGoroutine())
         eph++
+
+        select {
+        case <-c:
+            fmt.Print("\nDone.")
+            doneLog()
+            workLog.Wait()
+            break
+        default:
+            continue
+        }
     }
 }
 
