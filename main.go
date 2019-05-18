@@ -14,7 +14,6 @@ var (
     world        []ICell
     mutex        = &sync.Mutex{}
     lives        livesScores
-    sim          = 0
     liveInitDome bool
     epoch        int64 = 1
     epochLog           = 1
@@ -82,5 +81,4 @@ mainLoop:
 func loop() {
     world = GeneratingNormallyDistributedWorld()
     Simulate()
-    ResetWorld()
 }
