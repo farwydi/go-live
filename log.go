@@ -67,8 +67,9 @@ func saverLog() {
 
 func log(msg string) {
     if *PrintActionPtr {
-        workLog.Add(1)
-
-        queueLog <- msg
+        if epoch % *GenomeSkip == 0 {
+            workLog.Add(1)
+            queueLog <- msg
+        }
     }
 }

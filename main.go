@@ -6,19 +6,18 @@ import (
     "math/rand"
     "os"
     "os/signal"
-    "runtime"
     "sync"
-    "time"
 )
 
 var (
     config       Config
     world        []ICell
     mutex        = &sync.Mutex{}
-    wg           sync.WaitGroup
     lives        livesScores
     sim          = 0
     liveInitDome bool
+    epoch        int64 = 1
+    epochLog           = 1
 )
 
 // -w-width=64 -w-height=32 -w-size-cell=4 make-log=true
@@ -31,6 +30,7 @@ var (
     PrintActionLevelPtr = flag.Int("log-level", 0, "Print action level")
     LogFile             = flag.String("log-file", "render_engine/sim.log", "Log filename")
     GeneratorType       = flag.String("gen-type", "gwait", "Type of generator genome")
+    GenomeSkip          = flag.Int64("gen-skip", 1000, "Log every %n epoch")
 )
 
 func main() {
@@ -58,7 +58,6 @@ func main() {
 
     log("VERSION 2\n")
 
-    eph := 1
 mainLoop:
     for {
         select {
@@ -68,13 +67,14 @@ mainLoop:
             doneLog()
             break mainLoop
         default:
-            start := time.Now()
-
             loop()
 
-            elapsed := time.Since(start)
-            fmt.Printf("\rBinomial took %s, %d, %d", elapsed, eph, runtime.NumGoroutine())
-            eph++
+            if epoch%*GenomeSkip == 0 {
+                fmt.Printf("Epoch %d save\n", epoch)
+                epochLog++
+            }
+
+            epoch++
         }
     }
 }

@@ -62,7 +62,7 @@ func GeneratingNormallyDistributedWorld() []ICell {
     size := config.Height * config.Width
     world := make([]ICell, size)
 
-    log(fmt.Sprintf("EPOCH %d\n", sim))
+    log(fmt.Sprintf("EPOCH %d\n", epochLog))
 
     // Gen well
     // Top
