@@ -25,6 +25,8 @@ func Simulate() {
     for running {
         running = false
 
+        //log("SHOT\n")
+
         for _, cell := range world {
             switch t := cell.(type) {
             case *LiveCell:

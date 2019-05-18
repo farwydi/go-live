@@ -114,10 +114,17 @@ func (e *LiveCell) Eat(vector [2]int) {
     switch world[i].(type) {
     case *EatCell:
         e.health += 10
+        e.score += config.RatingEat
+        world[i] = CreateEmptyCell(X, Y)
     case *PoisonCell:
-        e.health = 0
+        iod, _ := resolveXY(e.cell.X, e.cell.Y)
+        world[iod] = CreatePoisonCell(e.cell.X, e.cell.Y)
+
+        log(fmt.Sprintf("S D %d,%d\n", e.cell.X, e.cell.Y))
+
+        world[i] = CreateEmptyCell(X, Y)
     case *EmptyCell:
-        e.health -= 1
+        e.health -= 10
     case *WellCell:
         e.health -= 10
     }
@@ -135,12 +142,9 @@ func (e *LiveCell) Recycle(vector [2]int) {
 
     switch world[i].(type) {
     case *EatCell:
-        e.health -= 10
         world[i] = CreatePoisonCell(X, Y)
     case *PoisonCell:
         world[i] = CreateEatCell(X, Y)
-    case *EmptyCell:
-        e.health -= 1
     case *WellCell:
         e.health -= 10
     }
@@ -159,12 +163,14 @@ func (e *LiveCell) Attack(vector [2]int) {
     switch t := world[i].(type) {
     case *LiveCell:
         t.health -= 10
+        if t.health < 1 {
+            world[i] = CreateEatCell(X, Y)
+            e.score += config.RatingEat
+        }
     case *EatCell:
         world[i] = CreateEmptyCell(X, Y)
     case *PoisonCell:
         world[i] = CreateEmptyCell(X, Y)
-    case *EmptyCell:
-        e.health -= 1
     case *WellCell:
         e.health -= 10
     }
@@ -183,7 +189,7 @@ func (e *LiveCell) Move(vector [2]int) error {
         return err
     }
 
-    switch t := world[i].(type) {
+    switch world[i].(type) {
     case *EmptyCell:
         // Наткнулись на пустую клетку
         if *PrintActionPtr && *PrintActionLevelPtr > 2 {
@@ -192,10 +198,13 @@ func (e *LiveCell) Move(vector [2]int) error {
 
         log(fmt.Sprintf("S M %d,%d %d,%d\n", e.cell.X, e.cell.Y, movieX, movieY))
 
-        mutex.Lock()
+        iod, _ := resolveXY(e.cell.X, e.cell.Y)
+        world[iod] = CreateEmptyCell(e.cell.X, e.cell.Y)
+
         e.cell.X = movieX
         e.cell.Y = movieY
-        mutex.Unlock()
+
+        world[i] = e
 
         e.score += config.RatingMove
 
@@ -205,31 +214,38 @@ func (e *LiveCell) Move(vector [2]int) error {
             fmt.Printf("[%s.%d] move and die (poison)\n", e.name, e.health)
         }
 
-        e.health = 0
+        iod, _ := resolveXY(e.cell.X, e.cell.Y)
+        world[iod] = CreateEmptyCell(e.cell.X, e.cell.Y)
 
         log(fmt.Sprintf("S D %d,%d\n", e.cell.X, e.cell.Y))
 
     case *EatCell:
         // Наступили на еду
-        if *PrintActionPtr && *PrintActionLevelPtr > 2 {
-            fmt.Printf("[%s.%d] move and eat\n", e.name, e.health)
-        }
+        iod, _ := resolveXY(e.cell.X, e.cell.Y)
+        world[iod] = CreateEmptyCell(e.cell.X, e.cell.Y)
 
-        // Забираем калории еды и добавляем их к текущему ХП
-        e.health += t.calories
-        // Начисляем рейтинг за активность
-        e.score += config.RatingEat
-        // Обнуляет клетку с едой
-        world[i] = CreateEmptyCell(movieX, movieY)
-        // Переходим на эту клетку
-
-        // Двигаем клетку на место с едой
-        log(fmt.Sprintf("S E %d,%d %d,%d\n", e.cell.X, e.cell.Y, movieX, movieY))
-
-        mutex.Lock()
         e.cell.X = movieX
         e.cell.Y = movieY
-        mutex.Unlock()
+        world[i] = e
+
+        log(fmt.Sprintf("S M %d,%d %d,%d\n", e.cell.X, e.cell.Y, movieX, movieY))
+
+        //    if *PrintActionPtr && *PrintActionLevelPtr > 2 {
+        //        fmt.Printf("[%s.%d] move and eat\n", e.name, e.health)
+        //    }
+        //
+        //    // Забираем калории еды и добавляем их к текущему ХП
+        //    e.health += t.calories
+        //    // Начисляем рейтинг за активность
+        //    e.score += config.RatingEat
+        //    // Обнуляет клетку с едой
+        //    world[i] = CreateEmptyCell(movieX, movieY)
+        //    // Переходим на эту клетку
+        //
+        //    // Двигаем клетку на место с едой
+        //    log(fmt.Sprintf("S E %d,%d %d,%d\n", e.cell.X, e.cell.Y, movieX, movieY))
+        //
+
     }
 
     // ОК
