@@ -28,7 +28,7 @@ class Render {
                 if (gStr != "") {
                     let genDOM = document.createElement("span");
                     genDOM.className = "gen";
-                    genDOM.innerText = `${i} ${gStr}`;
+                    genDOM.innerText = `${i}_${gStr}`;
                     genomDOM.appendChild(genDOM);
                 }
                 i++;
@@ -96,44 +96,43 @@ function resolveGenom(g: number): string {
         case 24:
             return 'GEatDownRight';
 
-        case 25:
-            return 'GAttackUp';
-        case 26:
-            return 'GAttackUpLeft';
-        case 27:
-            return 'GAttackUpRight';
-        case 28:
-            return 'GAttackLeft';
-        case 29:
-            return 'GAttackRight';
-        case 30:
-            return 'GAttackDown';
-        case 31:
-            return 'GAttackDownLeft';
-        case 32:
-            return 'GAttackDownRight';
+        // case 25:
+        //     return 'GAttackUp';
+        // case 26:
+        //     return 'GAttackUpLeft';
+        // case 27:
+        //     return 'GAttackUpRight';
+        // case 28:
+        //     return 'GAttackLeft';
+        // case 29:
+        //     return 'GAttackRight';
+        // case 30:
+        //     return 'GAttackDown';
+        // case 31:
+        //     return 'GAttackDownLeft';
+        // case 32:
+        //     return 'GAttackDownRight';
 
-        case 33:
+        case 25:
             return 'GRecycleUp';
-        case 34:
+        case 26:
             return 'GRecycleUpLeft';
-        case 35:
+        case 27:
             return 'GRecycleUpRight';
-        case 36:
+        case 28:
             return 'GRecycleLeft';
-        case 37:
+        case 29:
             return 'GRecycleRight';
-        case 38:
+        case 30:
             return 'GRecycleDown';
-        case 39:
+        case 31:
             return 'GRecycleDownLeft';
-        case 40:
+        case 32:
             return 'GRecycleDownRight';
 
         default:
-            if (g >= 42 && g <= 82) {
-                return `GJumpTo_${g - 42}`;
-                // return "";
+            if (g >= 34 && g <= 66) {
+                return `GJumpTo_${g - 34}`;
             }
 
             return "";

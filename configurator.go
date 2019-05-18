@@ -30,6 +30,7 @@ type Config struct {
     EatMaxCalories int
 
     // Очки, начисляемые за действия
-    RatingEat  int
-    RatingMove int
+    RatingEat     int
+    RatingMove    int
+    RatingRecycle int
 }

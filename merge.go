@@ -15,10 +15,10 @@ func inArray(b int, arr [GenomeHalfSize]int) bool {
 }
 
 func MutationStd(genome Genome) Genome {
-    r := rand.Intn(101)
-    if r > 99 {
+    r := rand.Intn(1001)
+    if r > 990 {
         genome[RandomGenPosition()] = RandomGen()
-        log("MUTATION")
+        log("MUTATION\n")
     }
 
     return genome

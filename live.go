@@ -123,10 +123,6 @@ func (e *LiveCell) Eat(vector [2]int) {
         log(fmt.Sprintf("S D %d,%d\n", e.cell.X, e.cell.Y))
 
         world[i] = CreateEmptyCell(X, Y)
-    case *EmptyCell:
-        e.health -= 10
-    case *WellCell:
-        e.health -= 10
     }
 }
 
@@ -141,12 +137,9 @@ func (e *LiveCell) Recycle(vector [2]int) {
     }
 
     switch world[i].(type) {
-    case *EatCell:
-        world[i] = CreatePoisonCell(X, Y)
     case *PoisonCell:
+        e.score += config.RatingRecycle
         world[i] = CreateEatCell(X, Y)
-    case *WellCell:
-        e.health -= 10
     }
 }
 
@@ -203,7 +196,6 @@ func (e *LiveCell) Move(vector [2]int) error {
 
         e.cell.X = movieX
         e.cell.Y = movieY
-
         world[i] = e
 
         e.score += config.RatingMove
@@ -220,32 +212,17 @@ func (e *LiveCell) Move(vector [2]int) error {
         log(fmt.Sprintf("S D %d,%d\n", e.cell.X, e.cell.Y))
 
     case *EatCell:
-        // Наступили на еду
         iod, _ := resolveXY(e.cell.X, e.cell.Y)
         world[iod] = CreateEmptyCell(e.cell.X, e.cell.Y)
 
+        // Наступили на еду
         e.cell.X = movieX
         e.cell.Y = movieY
         world[i] = e
 
+        e.score += config.RatingMove
+
         log(fmt.Sprintf("S M %d,%d %d,%d\n", e.cell.X, e.cell.Y, movieX, movieY))
-
-        //    if *PrintActionPtr && *PrintActionLevelPtr > 2 {
-        //        fmt.Printf("[%s.%d] move and eat\n", e.name, e.health)
-        //    }
-        //
-        //    // Забираем калории еды и добавляем их к текущему ХП
-        //    e.health += t.calories
-        //    // Начисляем рейтинг за активность
-        //    e.score += config.RatingEat
-        //    // Обнуляет клетку с едой
-        //    world[i] = CreateEmptyCell(movieX, movieY)
-        //    // Переходим на эту клетку
-        //
-        //    // Двигаем клетку на место с едой
-        //    log(fmt.Sprintf("S E %d,%d %d,%d\n", e.cell.X, e.cell.Y, movieX, movieY))
-        //
-
     }
 
     // ОК
@@ -301,14 +278,14 @@ const (
     GEatDownLeft
     GEatDownRight
 
-    GAttackUp
-    GAttackUpLeft
-    GAttackUpRight
-    GAttackLeft
-    GAttackRight
-    GAttackDown
-    GAttackDownLeft
-    GAttackDownRight
+    //GAttackUp
+    //GAttackUpLeft
+    //GAttackUpRight
+    //GAttackLeft
+    //GAttackRight
+    //GAttackDown
+    //GAttackDownLeft
+    //GAttackDownRight
 
     GRecycleUp
     GRecycleUpLeft
@@ -376,22 +353,22 @@ func (e *LiveCell) Action() bool {
     case GMoveUpLeft:
         e.Move(UpLeft)
 
-    case GAttackUp:
-        e.Attack(Up)
-    case GAttackUpRight:
-        e.Attack(UpRight)
-    case GAttackRight:
-        e.Attack(Right)
-    case GAttackDownRight:
-        e.Attack(DownRight)
-    case GAttackDown:
-        e.Attack(Down)
-    case GAttackDownLeft:
-        e.Attack(DownLeft)
-    case GAttackLeft:
-        e.Attack(Left)
-    case GAttackUpLeft:
-        e.Attack(UpLeft)
+    //case GAttackUp:
+    //    e.Attack(Up)
+    //case GAttackUpRight:
+    //    e.Attack(UpRight)
+    //case GAttackRight:
+    //    e.Attack(Right)
+    //case GAttackDownRight:
+    //    e.Attack(DownRight)
+    //case GAttackDown:
+    //    e.Attack(Down)
+    //case GAttackDownLeft:
+    //    e.Attack(DownLeft)
+    //case GAttackLeft:
+    //    e.Attack(Left)
+    //case GAttackUpLeft:
+    //    e.Attack(UpLeft)
 
     case GEatUp:
         e.Eat(Up)

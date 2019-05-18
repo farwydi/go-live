@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "sort"
     "strconv"
 )
@@ -52,6 +53,6 @@ func Simulate() {
         s += strconv.Itoa(lives[i].score) + " "
     }
 
-    //fmt.Print(s)
+    fmt.Print(s)
     liveInitDome = true
 }

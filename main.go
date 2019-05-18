@@ -48,8 +48,9 @@ func main() {
 
         EatMaxCalories: 50,
 
-        RatingEat:  10,
-        RatingMove: 5,
+        RatingEat:     10,
+        RatingMove:    5,
+        RatingRecycle: 15,
     }
 
     fmt.Printf("%+v\n", config)
