@@ -43,6 +43,28 @@ func resolveXY(x int, y int) (int, error) {
     return (config.Height * x) + y, nil
 }
 
+func AddPoisonInWorld() {
+reTry:
+    i := rand.Intn(config.Height * config.Width)
+    switch world[i].(type) {
+    case *EmptyCell:
+        world[i] = CreatePoisonCell(calcXY(i))
+    default:
+        goto reTry
+    }
+}
+
+func AddEatInWorld() {
+reTry:
+    i := rand.Intn(config.Height * config.Width)
+    switch world[i].(type) {
+    case *EmptyCell:
+        world[i] = CreateEatCell(calcXY(i))
+    default:
+        goto reTry
+    }
+}
+
 // Простая функция создания нормально распределённого мира
 func GeneratingNormallyDistributedWorld() []ICell {
 
@@ -184,7 +206,6 @@ func GeneratingNormallyDistributedWorld() []ICell {
 
     lives[1].name = "beta"
     lives[1].genome = lives[0].genome
-
 
     // Eat
     for c := CountEatCell; c > 0; {

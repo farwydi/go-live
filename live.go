@@ -133,6 +133,7 @@ func (e *LiveCell) Eat(vector [2]int) int {
         e.health += 10
         e.score += config.RatingEat
         world[i] = CreateEmptyCell(X, Y)
+        AddEatInWorld()
 
         //if e.name == "alpha" {
         //    fmt.Printf("Eat\n", )
@@ -140,6 +141,7 @@ func (e *LiveCell) Eat(vector [2]int) int {
     case *PoisonCell:
         e.Die()
         world[i] = CreateEmptyCell(X, Y)
+        AddPoisonInWorld()
     }
 
     return 1
@@ -253,6 +255,7 @@ func (e *LiveCell) Move(vector [2]int) int {
         e.cell.X = movieX
         e.cell.Y = movieY
         world[i] = e
+        AddEatInWorld()
 
         e.score += config.RatingMove
 

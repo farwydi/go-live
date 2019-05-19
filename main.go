@@ -27,7 +27,7 @@ var (
     PrintActionLevelPtr = flag.Int("log-level", 0, "Print action level")
     LogFile             = flag.String("log-file", "render_engine/sim.log", "Log filename")
     GeneratorType       = flag.String("gen-type", "gwait", "Type of generator genome")
-    GenomeSkip          = flag.Int64("gen-skip", 10, "Log every %n epoch")
+    GenomeSkip          = flag.Int64("gen-skip", 100000, "Log every %n epoch")
     JumpEnable          = flag.Bool("jump", true, "genome jumper")
 )
 
