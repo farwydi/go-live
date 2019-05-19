@@ -3,8 +3,8 @@ package main
 import "math/rand"
 
 const (
-    GenomeSize     = 64
-    GenomeHalfSize = 64 / 2
+    GenomeSize     = 68
+    GenomeHalfSize = GenomeSize / 2
 )
 
 type (

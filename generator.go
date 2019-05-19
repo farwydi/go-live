@@ -109,6 +109,83 @@ func GeneratingNormallyDistributedWorld() []ICell {
         }
     }
 
+    // Custom
+    lives[0].name = "alpha"
+    lives[0].genome = Genome{
+        GSeeRight,
+        GEnd + 17,
+        GEnd + 8,  // EatCell
+        GEnd + 11, // PoisonCell
+        GEnd + 15, // EmptyCell
+        GEnd + 17, // WellCell
+        GEnd + 17, // LiveCell
+        GEatRight,
+        GMoveRight,
+        GEnd + 1,
+        GRecycleRight,
+        GEatRight,
+        GMoveRight,
+        GEnd + 1,
+        GMoveRight,
+        GEnd + 1,
+        GEnd + 18,
+        GSeeUp,
+        GEnd + 34,
+        GEnd + 25, // EatCell
+        GEnd + 28, // PoisonCell
+        GEnd + 32, // EmptyCell
+        GEnd + 34, // WellCell
+        GEnd + 34, // LiveCell
+        GEatUp,
+        GMoveUp,
+        GEnd + 18,
+        GRecycleUp,
+        GEatUp,
+        GMoveUp,
+        GEnd + 18,
+        GMoveUp,
+        GEnd + 18,
+        GEnd + 35,
+        GSeeLeft,
+        GEnd + 51,
+        GEnd + 42, // EatCell
+        GEnd + 45, // PoisonCell
+        GEnd + 49, // EmptyCell
+        GEnd + 51, // WellCell
+        GEnd + 51, // LiveCell
+        GEatLeft,
+        GMoveLeft,
+        GEnd + 35,
+        GRecycleLeft,
+        GEatLeft,
+        GMoveLeft,
+        GEnd + 35,
+        GMoveLeft,
+        GEnd + 35,
+        GEnd + 52,
+        GSeeDown,
+        GEnd + 68,
+        GEnd + 59, // EatCell
+        GEnd + 62, // PoisonCell
+        GEnd + 66, // EmptyCell
+        GEnd + 68, // WellCell
+        GEnd + 68, // LiveCell
+        GEatDown,
+        GMoveDown,
+        GEnd + 52,
+        GRecycleDown,
+        GEatDown,
+        GMoveDown,
+        GEnd + 52,
+        GMoveDown,
+        GEnd + 52,
+        GEnd + 1,
+    }
+
+    lives[1].name = "beta"
+    lives[1].genome = lives[0].genome
+
+
     // Eat
     for c := CountEatCell; c > 0; {
 
